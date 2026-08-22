@@ -332,47 +332,58 @@ export default function AdminPage() {
     file: File
   ): Promise<string | null> => {
     try {
-      const fileExtension =
-        file.name
-          .split(".")
-          .pop() || "jpg";
+      const cloudName =
+        process.env
+          .NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME;
 
-      const fileName =
-        `${Date.now()}-${Math.random()
-          .toString(36)
-          .substring(2)}.${fileExtension}`;
+      const uploadPreset =
+        process.env
+          .NEXT_PUBLIC_CLOUDINARY_UPLOAD_PRESET;
 
-      const { error } =
-        await supabase.storage
-          .from("product-images")
-          .upload(
-            fileName,
-            file,
-            {
-              cacheControl: "3600",
-              upsert: false,
-            }
-          );
-
-      if (error) {
-        console.error(
-          "Image upload error:",
-          error
-        );
-
+      if (!cloudName || !uploadPreset) {
         setMessage(
-          `Image upload failed: ${error.message}`
+          "Cloudinary is not configured. Please check your environment variables."
         );
 
         return null;
       }
 
-      const { data } =
-        supabase.storage
-          .from("product-images")
-          .getPublicUrl(fileName);
+      const formData = new FormData();
 
-      return data.publicUrl;
+      formData.append("file", file);
+      formData.append(
+        "upload_preset",
+        uploadPreset
+      );
+
+      const response = await fetch(
+        `https://api.cloudinary.com/v1_1/${cloudName}/image/upload`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      const data =
+        await response.json();
+
+      if (!response.ok) {
+        console.error(
+          "Image upload error:",
+          data
+        );
+
+        setMessage(
+          `Image upload failed: ${
+            data?.error?.message ||
+            "Unknown error"
+          }`
+        );
+
+        return null;
+      }
+
+      return data.secure_url as string;
     } catch (error) {
       console.error(
         "Unexpected upload error:",
@@ -404,32 +415,53 @@ export default function AdminPage() {
       }
 
       try {
-        const marker =
-          "/product-images/";
+        const marker = "/upload/";
 
         const index =
           imageUrl.indexOf(marker);
 
         if (index === -1) {
+          // Not a Cloudinary URL — nothing to delete here
           return;
         }
 
-        const filePath =
+        let publicPath =
           imageUrl.substring(
             index + marker.length
           );
 
-        const { error } =
-          await supabase.storage
-            .from("product-images")
-            .remove([
-              filePath,
-            ]);
+        // Strip the version segment, e.g. v1234567890/
+        publicPath =
+          publicPath.replace(
+            /^v\d+\//,
+            ""
+          );
 
-        if (error) {
+        // Strip the file extension
+        const publicId =
+          publicPath.replace(
+            /\.[^/.]+$/,
+            ""
+          );
+
+        const response = await fetch(
+          "/api/delete-image",
+          {
+            method: "POST",
+            headers: {
+              "Content-Type":
+                "application/json",
+            },
+            body: JSON.stringify({
+              publicId,
+            }),
+          }
+        );
+
+        if (!response.ok) {
           console.error(
             "Image delete error:",
-            error
+            await response.text()
           );
         }
       } catch (error) {
