@@ -92,6 +92,9 @@ export default function Home() {
   const [checkoutError, setCheckoutError] =
     useState("");
 
+  const [showQrPayment, setShowQrPayment] =
+    useState(false);
+
   /*
     LOAD PRODUCTS FROM SUPABASE
   */
@@ -651,7 +654,11 @@ export default function Home() {
 
       setCart([]);
 
-      setOrderSuccess(true);
+      if (paymentMethod === "Google Pay / UPI") {
+        setShowQrPayment(true);
+      } else {
+        setOrderSuccess(true);
+      }
 
       setCustomerName("");
       setPhone("");
@@ -1783,7 +1790,7 @@ export default function Home() {
 
               </div>
 
-              {!orderSuccess && (
+              {!orderSuccess && !showQrPayment && (
 
                 <button
                   onClick={() =>
@@ -1799,7 +1806,67 @@ export default function Home() {
 
             </div>
 
-            {orderSuccess ? (
+            {showQrPayment ? (
+
+              <div className="mx-auto mt-20 max-w-xl rounded-3xl border border-[#e9a33f]/30 bg-[#0b1119] p-8 text-center shadow-[0_30px_100px_rgba(0,0,0,0.5)] sm:p-12">
+
+                <p className="text-xs tracking-[0.3em] text-[#e9a33f]">
+                  SCAN TO PAY
+                </p>
+
+                <h2 className="mt-4 text-3xl font-bold sm:text-4xl">
+                  Pay with Google Pay
+                </h2>
+
+                <p className="mx-auto mt-4 max-w-md leading-relaxed text-gray-400">
+                  Scan the QR code below using Google Pay or any
+                  UPI app to complete your payment.
+                </p>
+
+                {orderId && (
+
+                  <div className="mx-auto mt-6 w-fit rounded-2xl border border-white/10 bg-white/[0.03] px-5 py-3">
+
+                    <p className="text-xs tracking-[0.2em] text-gray-500">
+                      ORDER NUMBER
+                    </p>
+
+                    <p className="mt-1 text-xl font-bold text-[#e9a33f]">
+                      #{orderId}
+                    </p>
+
+                  </div>
+
+                )}
+
+                <div className="mx-auto mt-8 flex h-64 w-64 items-center justify-center overflow-hidden rounded-2xl border border-white/10 bg-white p-4">
+
+                  <img
+                    src="/qr.png"
+                    alt="Google Pay QR Code"
+                    className="h-full w-full object-contain"
+                  />
+
+                </div>
+
+                <p className="mx-auto mt-6 max-w-md text-sm leading-relaxed text-gray-500">
+                  After completing the payment, tap the button
+                  below to finish your order.
+                </p>
+
+                <button
+                  onClick={() => {
+                    setShowQrPayment(false);
+                    setOrderSuccess(true);
+                  }}
+                  className="mt-8 w-full rounded-2xl bg-[#e9a33f] px-6 py-5 font-bold text-black transition hover:bg-[#ffd078]"
+                >
+                  I&apos;ve Paid — Confirm
+                </button>
+
+              </div>
+
+            ) : orderSuccess ? (
 
               <div className="mx-auto mt-20 max-w-xl rounded-3xl border border-[#e9a33f]/30 bg-[#0b1119] p-8 text-center shadow-[0_30px_100px_rgba(0,0,0,0.5)] sm:p-12">
 
@@ -2174,7 +2241,7 @@ export default function Home() {
         </p>
 
         <h2 className="mt-5 text-xl font-medium sm:text-xl">
-          Bungrua rawn thleng thar a awm leh zel dawn e.
+          Bungrua rawn thleng thar a awm leh zel dawn e.Harsatna i neih chuan a hnuaia number ah hian min lo phone ang che.
         </h2>
 
       </section>
