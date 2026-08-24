@@ -19,7 +19,7 @@ export default function ChatWidget() {
       setMessages([
         {
           role: "ai",
-          text: "Hi! Hlawndo Electronics AI ka ni a,i hriat duh leh zawh duh ang ang chu inthlahrung hauh lo in min zawt teh le.Ka boss chu Sangtea a nia",
+          text: "Chibai le, Hlawndo Electronics AI ka ni a,i hriat duh leh zawh duh ang ang chu inthlahrung hauh lo in min zawt teh le.Ka pu chu Sangtea a nia.",
         },
       ]);
     }
