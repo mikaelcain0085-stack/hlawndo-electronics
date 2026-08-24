@@ -97,6 +97,90 @@ export default function Home() {
     useState(false);
 
   /*
+    ENQUIRY FORM STATE
+  */
+
+  const [enquiryName, setEnquiryName] = useState("");
+  const [enquiryPhone, setEnquiryPhone] = useState("");
+  const [enquiryAddress, setEnquiryAddress] = useState("");
+  const [enquiryMessage, setEnquiryMessage] = useState("");
+
+  const [isSubmittingEnquiry, setIsSubmittingEnquiry] =
+    useState(false);
+
+  const [enquirySuccess, setEnquirySuccess] =
+    useState(false);
+
+  const [enquiryError, setEnquiryError] =
+    useState("");
+
+  const submitEnquiry = async () => {
+    setEnquiryError("");
+    setEnquirySuccess(false);
+
+    if (!enquiryName.trim()) {
+      setEnquiryError("Please enter your full name.");
+      return;
+    }
+
+    if (!enquiryPhone.trim()) {
+      setEnquiryError("Please enter your phone number.");
+      return;
+    }
+
+    if (!enquiryAddress.trim()) {
+      setEnquiryError("Please enter your address.");
+      return;
+    }
+
+    if (!enquiryMessage.trim()) {
+      setEnquiryError("Please enter your enquiry.");
+      return;
+    }
+
+    setIsSubmittingEnquiry(true);
+
+    try {
+      const { error: enquiryInsertError } = await supabase
+        .from("enquiries")
+        .insert([
+          {
+            full_name: enquiryName.trim(),
+            phone: enquiryPhone.trim(),
+            address: enquiryAddress.trim(),
+            message: enquiryMessage.trim(),
+          },
+        ]);
+
+      if (enquiryInsertError) {
+        console.error(
+          "Supabase enquiry error:",
+          JSON.stringify(enquiryInsertError, null, 2)
+        );
+
+        setEnquiryError(
+          "Something went wrong submitting your enquiry. Please try again."
+        );
+
+        return;
+      }
+
+      setEnquirySuccess(true);
+      setEnquiryName("");
+      setEnquiryPhone("");
+      setEnquiryAddress("");
+      setEnquiryMessage("");
+    } catch (err) {
+      console.error("Enquiry submit error:", err);
+      setEnquiryError(
+        "Something went wrong submitting your enquiry. Please try again."
+      );
+    } finally {
+      setIsSubmittingEnquiry(false);
+    }
+  };
+
+  /*
     LOAD PRODUCTS FROM SUPABASE
   */
 
@@ -2246,6 +2330,133 @@ export default function Home() {
           Bungrua rawn thleng thar a awm leh zel dawn e.Harsatna i neih chuan a hnuaia number ah hian min lo phone ang che.
         </h2>
 
+      </section>
+
+      {/* ENQUIRY FORM */}
+
+      <section
+        id="enquiry"
+        className="border-t border-white/10 bg-[#080d14] px-6 py-20"
+      >
+        <div className="mx-auto max-w-xl">
+
+          <div className="text-center">
+            <p className="text-xs tracking-[0.3em] text-[#e9a33f]">
+              GET IN TOUCH
+            </p>
+
+            <h2 className="mt-4 text-3xl font-bold text-white">
+              Send us an{" "}
+              <span className="text-[#e9a33f]">Enquiry</span>
+            </h2>
+
+            <p className="mt-3 text-sm text-gray-400">
+              Have a question about a product or need something
+              special? Fill this out and we&apos;ll get back to you.
+            </p>
+          </div>
+
+          <div className="mt-10 rounded-3xl border border-white/10 bg-[#0d141d] p-7 shadow-2xl md:p-10">
+
+            {enquirySuccess && (
+              <div className="mb-6 rounded-xl border border-green-500/30 bg-green-500/10 px-4 py-3 text-sm text-green-400">
+                Thanks! Your enquiry has been sent — we&apos;ll be in touch soon.
+              </div>
+            )}
+
+            {enquiryError && (
+              <div className="mb-6 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">
+                {enquiryError}
+              </div>
+            )}
+
+            <form
+              onSubmit={(event) => {
+                event.preventDefault();
+                submitEnquiry();
+              }}
+              className="space-y-5"
+            >
+              <div>
+                <label className="mb-2 block text-sm text-gray-400">
+                  Full Name
+                </label>
+                <input
+                  type="text"
+                  value={enquiryName}
+                  onChange={(event) => {
+                    setEnquiryName(event.target.value);
+                    setEnquiryError("");
+                  }}
+                  placeholder="Enter your full name"
+                  disabled={isSubmittingEnquiry}
+                  className="w-full rounded-xl border border-white/10 bg-[#080d14] px-4 py-4 text-white outline-none transition placeholder:text-gray-600 focus:border-[#e9a33f] disabled:cursor-not-allowed disabled:opacity-60"
+                />
+              </div>
+
+              <div>
+                <label className="mb-2 block text-sm text-gray-400">
+                  Phone Number
+                </label>
+                <input
+                  type="tel"
+                  value={enquiryPhone}
+                  onChange={(event) => {
+                    setEnquiryPhone(event.target.value);
+                    setEnquiryError("");
+                  }}
+                  placeholder="Enter your phone number"
+                  disabled={isSubmittingEnquiry}
+                  className="w-full rounded-xl border border-white/10 bg-[#080d14] px-4 py-4 text-white outline-none transition placeholder:text-gray-600 focus:border-[#e9a33f] disabled:cursor-not-allowed disabled:opacity-60"
+                />
+              </div>
+
+              <div>
+                <label className="mb-2 block text-sm text-gray-400">
+                  Address
+                </label>
+                <input
+                  type="text"
+                  value={enquiryAddress}
+                  onChange={(event) => {
+                    setEnquiryAddress(event.target.value);
+                    setEnquiryError("");
+                  }}
+                  placeholder="Enter your address"
+                  disabled={isSubmittingEnquiry}
+                  className="w-full rounded-xl border border-white/10 bg-[#080d14] px-4 py-4 text-white outline-none transition placeholder:text-gray-600 focus:border-[#e9a33f] disabled:cursor-not-allowed disabled:opacity-60"
+                />
+              </div>
+
+              <div>
+                <label className="mb-2 block text-sm text-gray-400">
+                  Enquiry
+                </label>
+                <textarea
+                  value={enquiryMessage}
+                  onChange={(event) => {
+                    setEnquiryMessage(event.target.value);
+                    setEnquiryError("");
+                  }}
+                  placeholder="Type your enquiry here"
+                  rows={5}
+                  disabled={isSubmittingEnquiry}
+                  className="w-full resize-y rounded-xl border border-white/10 bg-[#080d14] px-4 py-4 text-white outline-none transition placeholder:text-gray-600 focus:border-[#e9a33f] disabled:cursor-not-allowed disabled:opacity-60"
+                />
+              </div>
+
+              <button
+                type="submit"
+                disabled={isSubmittingEnquiry}
+                className="w-full rounded-xl bg-[#e9a33f] px-6 py-4 font-bold text-black transition hover:bg-[#ffd078] disabled:cursor-not-allowed disabled:opacity-60"
+              >
+                {isSubmittingEnquiry ? "Sending..." : "Submit Enquiry"}
+              </button>
+            </form>
+
+          </div>
+
+        </div>
       </section>
 
       {/* FOOTER */}
