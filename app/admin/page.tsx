@@ -1574,8 +1574,8 @@ export default function AdminPage() {
                     Smart TVs
                   </option>
 
-                  <option value="Camera">
-                    Cameras & Photo
+                  <option value="chargers">
+                    Chargers & Cables
                   </option>
 
                   <option value="Accessories">
