@@ -1208,7 +1208,7 @@ export default function AdminPage() {
 
   if (!isAuthorized) {
     return (
-      <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#121c28] text-gray-400">
+      <main className="relative flex min-h-screen items-center justify-center overflow-hidden bg-[#162231] text-gray-400">
 
         <div className="absolute left-1/2 top-1/2 h-[500px] w-[500px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#e9a33f]/10 blur-[140px]" />
 
