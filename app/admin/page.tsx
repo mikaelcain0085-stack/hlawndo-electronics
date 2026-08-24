@@ -2014,7 +2014,7 @@ export default function AdminPage() {
 
                     {/* ORDER HEADER */}
 
-                    <div className="flex flex-col justify-between gap-6 border-b border-white/10 bg-gradient-to-r from-white/[0.04] to-transparent p-6 md:flex-row md:items-center md:p-8">
+                    <div className="flex flex-col justify-between gap-6 border-b border-white/10 bg-gradient-to-r from-white/[0.04] to-transparent p-4 md:flex-row md:items-center md:p-5">
 
                       <div>
 
@@ -2060,7 +2060,7 @@ export default function AdminPage() {
 
                     {/* ORDER CONTENT */}
 
-                    <div className="grid gap-8 p-6 md:p-8 xl:grid-cols-[0.85fr_1.35fr]">
+                    <div className="grid gap-5 p-5 md:p-6 xl:grid-cols-[0.85fr_1.35fr]">
 
                       {/* CUSTOMER */}
 
@@ -2072,7 +2072,7 @@ export default function AdminPage() {
 
                         <div className="mt-5 divide-y divide-white/5 overflow-hidden rounded-3xl border border-white/10 bg-[#070b11]">
 
-                          <div className="p-5">
+                          <div className="p-4">
 
                             <p className="text-[10px] tracking-[0.15em] text-gray-500">
                               CUSTOMER NAME
@@ -2181,7 +2181,7 @@ export default function AdminPage() {
                           ORDERED ITEMS
                         </p>
 
-                        <div className="mt-5 space-y-4">
+                        <div className="mt-4 space-y-3">
 
                           {orderItems.length === 0 ? (
 
@@ -2199,7 +2199,7 @@ export default function AdminPage() {
                                   className="group flex gap-4 rounded-3xl border border-white/10 bg-[#070b11] p-4 transition hover:border-white/20"
                                 >
 
-                                  <div className="flex h-24 w-24 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-white/[0.03] p-2">
+                                  <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-white/[0.03] p-2">
 
                                     {item.image ? (
 
@@ -2263,9 +2263,9 @@ export default function AdminPage() {
 
                     {/* ORDER CONTROLS */}
 
-                    <div className="border-t border-white/10 bg-[#070b11]/80 p-6 md:p-8">
+                    <div className="border-t border-white/10 bg-[#070b11]/80 p-4 md:p-5">
 
-                      <div className="flex flex-col justify-between gap-6 xl:flex-row xl:items-center">
+                      <div className="flex flex-col justify-between gap-4 xl:flex-row xl:items-center">
 
                         <div>
 
@@ -2314,7 +2314,7 @@ export default function AdminPage() {
                                 })
                               )
                             }
-                            className="rounded-2xl border border-white/10 bg-[#0b1018] px-5 py-4 text-sm font-medium text-white outline-none transition focus:border-[#e9a33f]/60 disabled:cursor-not-allowed disabled:opacity-60"
+                            className="rounded-2xl border border-white/10 bg-[#0b1018] px-4 py-3 text-sm font-medium text-white outline-none transition focus:border-[#e9a33f]/60 disabled:cursor-not-allowed disabled:opacity-60"
                           >
 
                             <option value="Pending">
@@ -2363,7 +2363,7 @@ export default function AdminPage() {
                                 order.id
                               )
                             }
-                            className="rounded-2xl bg-gradient-to-r from-[#d88729] via-[#e9a33f] to-[#ffd078] px-7 py-4 text-sm font-black text-black shadow-[0_10px_30px_rgba(233,163,63,0.15)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
+                            className="rounded-2xl bg-gradient-to-r from-[#d88729] via-[#e9a33f] to-[#ffd078] px-5 py-3 text-sm font-black text-black shadow-[0_10px_30px_rgba(233,163,63,0.15)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
                           >
 
                             {updatingOrderId ===
