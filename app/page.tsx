@@ -2327,7 +2327,7 @@ export default function Home() {
         </p>
 
         <h2 className="mt-5 text-xl font-medium sm:text-xl">
-          Bungrua rawn thleng thar a awm leh zel dawn e.Harsatna i neih chuan a hnuaia number ah hian min lo phone ang che.
+          Bungrua rawn thleng thar a awm leh zel dawn e.Harsatna i neih chuan a hnuaia Enquiry Form atang hian i harsatna minlo hrilh in, i mamawh min lo zawt ang che.
         </h2>
 
       </section>
