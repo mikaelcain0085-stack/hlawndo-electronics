@@ -50,10 +50,10 @@ const categories = [
     iconStyle: "border-cyan-400/20 bg-cyan-400/10",
   },
   {
-    key: "camera",
-    icon: "📷",
-    items: "CAMERAS",
-    title: "Cameras & Photo",
+    key: "chargers",
+    icon: "🔌",
+    items: "CHARGERS & CABLES",
+    title: "Charger & Data Cables",
     glow: "bg-red-500/10",
     iconStyle: "border-red-400/20 bg-red-400/10",
   },
@@ -182,13 +182,14 @@ export default function Home() {
       );
     }
 
-    if (category === "camera") {
+    if (category === "chargers") {
       return (
-        productCategory.includes("camera") ||
-        productCategory.includes("photo") ||
-        productName.includes("camera") ||
-        productName.includes("canon") ||
-        productName.includes("nikon")
+        productCategory.includes("charger") ||
+        productCategory.includes("cable") ||
+        productCategory.includes("data") ||
+        productName.includes("charger") ||
+        productName.includes("cable") ||
+        productName.includes("data cable")
       );
     }
 
