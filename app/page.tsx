@@ -29,7 +29,7 @@ const categories = [
     key: "smartphones",
     icon: "📱",
     items: "SMARTPHONES",
-    title: "Smartphones",
+    title: "Smartphones & Accessories",
     glow: "bg-blue-500/10",
     iconStyle: "border-blue-400/20 bg-blue-400/10",
   },

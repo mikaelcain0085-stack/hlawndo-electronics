@@ -1563,7 +1563,7 @@ export default function AdminPage() {
                   </option>
 
                   <option value="Smartphones">
-                    Smartphones
+                    Smartphones & Accessories
                   </option>
 
                   <option value="Audio">
