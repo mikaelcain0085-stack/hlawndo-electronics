@@ -19,7 +19,7 @@ export default function ChatWidget() {
       setMessages([
         {
           role: "ai",
-          text: "Hi! I'm the Hlawndo Electronics assistant. Ask me about laptops, phones, audio gear, TVs, or chargers.",
+          text: "Hi! HlawndoElectronics AI ka ni a,i hriat du leh zawh duh ang ang chu inthlahrung hauh lo in min zawt teh le.Ka boss chu Sangtea a nia",
         },
       ]);
     }
@@ -70,11 +70,13 @@ export default function ChatWidget() {
         type="button"
         onClick={openChat}
         aria-label="Open chat"
-        className={`fixed bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-[#e9a33f] text-2xl text-black shadow-2xl transition hover:bg-[#ffd078] ${
+        className={`fixed bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-[#c48a35]  text-[#1a1208] shadow-2xl transition hover:bg-[#d9a04a] ${
           isOpen ? "hidden" : "flex"
         }`}
       >
-        💬
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
+          <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
+        </svg>
       </button>
 
       {/* PANEL */}
@@ -86,7 +88,7 @@ export default function ChatWidget() {
               <p className="text-xs tracking-[0.2em] text-[#e9a33f]">
                 HLAWNDO ELECTRONICS
               </p>
-              <p className="mt-1 text-sm font-bold text-white">Chat with us</p>
+              <p className="mt-1 text-sm font-medium text-white">ASSISTANT</p>
             </div>
             <button
               type="button"
