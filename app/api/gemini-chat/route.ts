@@ -62,22 +62,8 @@ export async function POST(req: NextRequest) {
         },
         body: JSON.stringify({
           contents,
-          systemInstruction: {
-            parts: [
-              {
-                text:
-                  "You are the shopping assistant for Hlawndo Electronics, an electronics " +
-                  "store selling laptops, smartphones, audio gear, TVs, and chargers/cables. " +
-                  "Answer in 2-3 short sentences maximum. Stay focused on the store, its " +
-                  "products, and general electronics questions. For anything unrelated " +
-                  "(sports, news, etc.), give a one-line acknowledgment and redirect to how " +
-                  "you can help with electronics. If you don't know something store-specific " +
-                  "(live stock, order status), say so and suggest contacting the store directly.",
-              },
-            ],
-          },
           generationConfig: {
-            maxOutputTokens: 1024,
+            maxOutputTokens: 3000,
             temperature: 0.7,
           },
         }),
