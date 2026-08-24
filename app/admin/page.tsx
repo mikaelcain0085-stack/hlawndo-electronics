@@ -1307,7 +1307,7 @@ export default function AdminPage() {
         {/* MESSAGE */}
 
         {message && (
-          <div className="mb-8 flex items-center gap-4 rounded-2xl border border-[#e9a33f]/20 bg-[#e9a33f]/10 px-5 py-4 text-sm text-[#ffd078] shadow-[0_10px_40px_rgba(233,163,63,0.08)] backdrop-blur-xl">
+          <div className="mb-8 flex items-center gap-4 rounded-2xl border border-[#e9a33f]/20 bg-[#e9a33f]/10 px-4 py-3 text-sm text-[#ffd078] shadow-[0_10px_40px_rgba(233,163,63,0.08)] backdrop-blur-xl">
 
             <span className="flex h-9 w-9 shrink-0 items-center justify-center rounded-xl bg-[#e9a33f]/15">
               ✦
@@ -1519,7 +1519,7 @@ export default function AdminPage() {
 
           <form
             onSubmit={handleSubmit}
-            className="grid gap-7 p-6 md:p-8"
+            className="grid gap-5 p-5 md:p-6"
           >
 
             <div>
@@ -1534,7 +1534,7 @@ export default function AdminPage() {
                 value={form.name}
                 onChange={handleChange}
                 placeholder="Example: Sony WH-1000XM5"
-                className="w-full rounded-2xl border border-white/10 bg-[#070b11] px-5 py-4 text-white outline-none transition placeholder:text-gray-600 focus:border-[#e9a33f]/70 focus:ring-4 focus:ring-[#e9a33f]/5"
+                className="w-full rounded-2xl border border-white/10 bg-[#070b11] px-4 py-3 text-white outline-none transition placeholder:text-gray-600 focus:border-[#e9a33f]/70 focus:ring-4 focus:ring-[#e9a33f]/5"
               />
 
             </div>
@@ -1551,7 +1551,7 @@ export default function AdminPage() {
                   name="category"
                   value={form.category}
                   onChange={handleChange}
-                  className="w-full rounded-2xl border border-white/10 bg-[#070b11] px-5 py-4 text-white outline-none transition focus:border-[#e9a33f]/70 focus:ring-4 focus:ring-[#e9a33f]/5"
+                  className="w-full rounded-2xl border border-white/10 bg-[#070b11] px-4 py-3 text-white outline-none transition focus:border-[#e9a33f]/70 focus:ring-4 focus:ring-[#e9a33f]/5"
                 >
 
                   <option value="">
@@ -1599,7 +1599,7 @@ export default function AdminPage() {
                   onChange={handleChange}
                   placeholder="4500"
                   min="0"
-                  className="w-full rounded-2xl border border-white/10 bg-[#070b11] px-5 py-4 text-white outline-none transition placeholder:text-gray-600 focus:border-[#e9a33f]/70 focus:ring-4 focus:ring-[#e9a33f]/5"
+                  className="w-full rounded-2xl border border-white/10 bg-[#070b11] px-4 py-3 text-white outline-none transition placeholder:text-gray-600 focus:border-[#e9a33f]/70 focus:ring-4 focus:ring-[#e9a33f]/5"
                 />
 
               </div>
@@ -1619,7 +1619,7 @@ export default function AdminPage() {
                 onChange={handleChange}
                 placeholder="10"
                 min="0"
-                className="w-full rounded-2xl border border-white/10 bg-[#070b11] px-5 py-4 text-white outline-none transition placeholder:text-gray-600 focus:border-[#e9a33f]/70 focus:ring-4 focus:ring-[#e9a33f]/5"
+                className="w-full rounded-2xl border border-white/10 bg-[#070b11] px-4 py-3 text-white outline-none transition placeholder:text-gray-600 focus:border-[#e9a33f]/70 focus:ring-4 focus:ring-[#e9a33f]/5"
               />
 
             </div>
@@ -1632,14 +1632,14 @@ export default function AdminPage() {
 
               <label
                 htmlFor="product-image"
-                className="group flex cursor-pointer flex-col items-center justify-center rounded-3xl border border-dashed border-[#e9a33f]/30 bg-gradient-to-b from-[#e9a33f]/5 to-transparent p-10 transition duration-300 hover:border-[#e9a33f]/70 hover:bg-[#e9a33f]/10"
+                className="group flex cursor-pointer flex-col items-center justify-center rounded-2xl border border-dashed border-[#e9a33f]/30 bg-gradient-to-b from-[#e9a33f]/5 to-transparent p-5 transition duration-300 hover:border-[#e9a33f]/70 hover:bg-[#e9a33f]/10"
               >
 
-                <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#e9a33f]/10 text-3xl transition duration-300 group-hover:scale-110">
+                <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-[#e9a33f]/10 text-3xl transition duration-300 group-hover:scale-110">
                   🖼️
                 </div>
 
-                <span className="mt-5 font-bold text-[#ffd078]">
+                <span className="mt-3 font-normal text-[#ffd078]">
                   Upload Product Image
                 </span>
 
@@ -1687,7 +1687,7 @@ export default function AdminPage() {
 
                 </div>
 
-                <div className="flex h-80 items-center justify-center bg-[radial-gradient(circle_at_center,rgba(233,163,63,0.08),transparent_60%)] p-6">
+                <div className="flex h-56 items-center justify-center bg-[radial-gradient(circle_at_center,rgba(233,163,63,0.08),transparent_60%)] p-4">
 
                   <img
                     src={form.image}
@@ -1704,7 +1704,7 @@ export default function AdminPage() {
             <button
               type="submit"
               disabled={saving}
-              className="group relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#d88729] via-[#e9a33f] to-[#ffd078] px-6 py-5 font-black text-black shadow-[0_15px_40px_rgba(233,163,63,0.2)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(233,163,63,0.3)] disabled:cursor-not-allowed disabled:opacity-60"
+              className="group relative overflow-hidden rounded-2xl bg-gradient-to-r from-[#d88729] via-[#e9a33f] to-[#ffd078] px-5 py-3 font-black text-black shadow-[0_15px_40px_rgba(233,163,63,0.2)] transition duration-300 hover:-translate-y-1 hover:shadow-[0_20px_50px_rgba(233,163,63,0.3)] disabled:cursor-not-allowed disabled:opacity-60"
             >
 
               <span className="relative z-10">
@@ -2131,7 +2131,7 @@ export default function AdminPage() {
 
                           <div className="mt-6 overflow-hidden rounded-3xl border border-red-500/25 bg-red-500/[0.06]">
 
-                            <div className="flex items-center gap-3 border-b border-red-500/15 px-5 py-4">
+                            <div className="flex items-center gap-3 border-b border-red-500/15 px-4 py-3">
 
                               <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-500/10 text-lg">
                                 ❌
