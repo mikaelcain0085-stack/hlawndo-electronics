@@ -2,6 +2,7 @@
 
 import { useEffect, useMemo, useState } from "react";
 import { supabase } from "../lib/supabase";
+import ChatWidget from "./components/ChatWidget";
 
 type Product = {
   id: number;
@@ -2257,6 +2258,8 @@ export default function Home() {
         <br />
         Admin: 9089993697 / 6909917041
       </footer>
+
+      <ChatWidget />
 
     </main>
   );
