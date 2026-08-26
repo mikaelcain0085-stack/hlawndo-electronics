@@ -13,8 +13,12 @@ export default function ChatWidget() {
   const [input, setInput] = useState("");
   const [isSending, setIsSending] = useState(false);
 
+  // Shows the special sentence only once after the first user conversation
+  const [hasShownFirstSentence, setHasShownFirstSentence] = useState(false);
+
   const openChat = () => {
     setIsOpen(true);
+
     if (messages.length === 0) {
       setMessages([
         {
@@ -31,7 +35,11 @@ export default function ChatWidget() {
     const text = input.trim();
     if (!text || isSending) return;
 
-    const nextMessages: ChatTurn[] = [...messages, { role: "user", text }];
+    const nextMessages: ChatTurn[] = [
+      ...messages,
+      { role: "user", text },
+    ];
+
     setMessages(nextMessages);
     setInput("");
     setIsSending(true);
@@ -40,23 +48,48 @@ export default function ChatWidget() {
       const res = await fetch("/api/gemini-chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ message: text, history: nextMessages }),
+        body: JSON.stringify({
+          message: text,
+          history: nextMessages,
+        }),
       });
 
       if (!res.ok) {
         setMessages((prev) => [
           ...prev,
-          { role: "ai", text: "Sorry, something went wrong. Please try again." },
+          {
+            role: "ai",
+            text: "Sorry, something went wrong. Please try again.",
+          },
         ]);
         return;
       }
 
       const data = await res.json();
-      setMessages((prev) => [...prev, { role: "ai", text: data.reply }]);
+
+      let reply = data.reply;
+
+      // Add the special sentence ONLY after the first user message
+      if (!hasShownFirstSentence) {
+        reply +=
+          "\n\nKa pa chu Michaela a ni a,min duat em em ani.";
+        setHasShownFirstSentence(true);
+      }
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "ai",
+          text: reply,
+        },
+      ]);
     } catch {
       setMessages((prev) => [
         ...prev,
-        { role: "ai", text: "Sorry, I couldn't connect. Please check your connection and try again." },
+        {
+          role: "ai",
+          text: "Sorry, I couldn't connect. Please check your connection and try again.",
+        },
       ]);
     } finally {
       setIsSending(false);
@@ -70,11 +103,19 @@ export default function ChatWidget() {
         type="button"
         onClick={openChat}
         aria-label="Open chat"
-        className={`fixed bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-[#c48a35]  text-[#1a1208] shadow-2xl transition hover:bg-[#d9a04a] ${
+        className={`fixed bottom-6 right-6 z-40 flex h-14 w-14 items-center justify-center rounded-full bg-[#c48a35] text-[#1a1208] shadow-2xl transition hover:bg-[#d9a04a] ${
           isOpen ? "hidden" : "flex"
         }`}
       >
-        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="h-6 w-6">
+        <svg
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="2"
+          strokeLinecap="round"
+          strokeLinejoin="round"
+          className="h-6 w-6"
+        >
           <path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z" />
         </svg>
       </button>
@@ -82,14 +123,19 @@ export default function ChatWidget() {
       {/* PANEL */}
       {isOpen && (
         <div className="fixed bottom-6 right-6 z-40 flex h-[520px] max-h-[calc(100vh-100px)] w-[350px] max-w-[calc(100vw-32px)] flex-col overflow-hidden rounded-3xl border border-white/10 bg-[#0d141d] shadow-2xl">
+          
           {/* HEADER */}
           <div className="flex items-center justify-between border-b border-white/10 bg-[#080d14] px-5 py-4">
             <div>
               <p className="text-xs tracking-[0.2em] text-[#e9a33f]">
                 HLAWNDO ELECTRONICS
               </p>
-              <p className="mt-1 text-sm font-medium text-white">ASSISTANT</p>
+
+              <p className="mt-1 text-sm font-medium text-white">
+                ASSISTANT
+              </p>
             </div>
+
             <button
               type="button"
               onClick={() => setIsOpen(false)}
@@ -105,10 +151,14 @@ export default function ChatWidget() {
             {messages.map((msg, i) => (
               <div
                 key={i}
-                className={`flex ${msg.role === "user" ? "justify-end" : "justify-start"}`}
+                className={`flex ${
+                  msg.role === "user"
+                    ? "justify-end"
+                    : "justify-start"
+                }`}
               >
                 <div
-                  className={`max-w-[85%] rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
+                  className={`max-w-[85%] whitespace-pre-line rounded-2xl px-4 py-2.5 text-sm leading-relaxed ${
                     msg.role === "user"
                       ? "rounded-br-sm bg-[#e9a33f] text-black"
                       : "rounded-bl-sm border border-white/10 bg-[#151d27] text-gray-200"
@@ -141,6 +191,7 @@ export default function ChatWidget() {
               disabled={isSending}
               className="flex-1 rounded-full border border-white/10 bg-[#0d141d] px-4 py-2.5 text-sm text-white outline-none transition placeholder:text-gray-600 focus:border-[#e9a33f] disabled:opacity-60"
             />
+
             <button
               type="submit"
               disabled={isSending}
