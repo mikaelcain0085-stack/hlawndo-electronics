@@ -95,6 +95,8 @@ export default function Home() {
 
   const [showQrPayment, setShowQrPayment] =
     useState(false);
+    const [qrPaymentAmount, setQrPaymentAmount] =
+  useState<number | null>(null);
 
   /*
     ENQUIRY FORM STATE
@@ -737,6 +739,7 @@ export default function Home() {
       setOrderId(
         orderData.id
       );
+      setQrPaymentAmount(cartTotal);
 
       setCart([]);
 
@@ -766,6 +769,26 @@ export default function Home() {
       setIsPlacingOrder(false);
     }
   };
+  
+   // UPI QR PAYMENT
+
+  const upiId = "sangteahlondo-1@okhdfcbank";
+
+  const paymentAmount = qrPaymentAmount ?? 0;
+
+  const upiPaymentUrl =
+    `upi://pay?pa=${encodeURIComponent(upiId)}` +
+    `&pn=${encodeURIComponent("HLAWNDO ELECTRONICS")}` +
+    `&am=${paymentAmount.toFixed(2)}` +
+    `&cu=INR` +
+    (orderId
+      ? `&tn=${encodeURIComponent(`Order #${orderId}`)}`
+      : "");
+
+  const qrCodeUrl =
+    `https://api.qrserver.com/v1/create-qr-code/?size=400x400&data=${encodeURIComponent(
+      upiPaymentUrl
+    )}`;
 
   return (
     <main className="min-h-screen overflow-hidden bg-[#080d14] text-white">
@@ -1928,11 +1951,10 @@ export default function Home() {
                 <div className="mx-auto mt-8 flex h-64 w-64 items-center justify-center overflow-hidden rounded-2xl border border-white/10 bg-white p-4">
 
                   <img
-                    src="/qr.png"
-                    alt="Google Pay QR Code"
-                    className="h-full w-full object-contain"
-                  />
-
+  src={qrCodeUrl}
+  alt="UPI Payment QR Code"
+  className="h-full w-full object-contain"
+/>
                 </div>
 
                 <p className="mx-auto mt-6 max-w-md text-sm leading-relaxed text-gray-500">
