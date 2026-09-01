@@ -1,75 +1,136 @@
 "use client";
 
-import { FormEvent, useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
+import { supabase } from "@/lib/supabase";
 
 export default function AdminLoginPage() {
   const router = useRouter();
 
-  const [adminId, setAdminId] = useState("");
-  const [password, setPassword] = useState("");
   const [message, setMessage] = useState("");
   const [isLoggingIn, setIsLoggingIn] = useState(false);
+  const [checkingSession, setCheckingSession] = useState(true);
 
-  /*
-  ========================================
-  ADMIN LOGIN DETAILS
-
-  Change these values if you want to use
-  a different Admin ID or Password.
-  ========================================
-  */
-
-  const correctAdminId = "sangtea041";
-  const correctPassword = "hlawndo@041";
-
-  const handleLogin = (event: FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-
-    setMessage("");
-
-    const enteredAdminId = adminId.trim();
-    const enteredPassword = password.trim();
-
-    if (
-      enteredAdminId === correctAdminId &&
-      enteredPassword === correctPassword
-    ) {
+  // Google Login
+  const handleGoogleLogin = async () => {
+    try {
+      setMessage("");
       setIsLoggingIn(true);
 
-      /*
-      ========================================
-      SAVE ADMIN LOGIN STATUS
+      const { error } = await supabase.auth.signInWithOAuth({
+        provider: "google",
+        options: {
+          redirectTo: `${window.location.origin}/admin-login`,
+        },
+      });
 
-      This exact key must also be checked
-      inside app/admin/page.tsx
-      ========================================
-      */
+      if (error) {
+        throw error;
+      }
+    } catch (error) {
+      console.error("Google login error:", error);
 
+      setMessage(
+        "Unable to start Google login. Please try again."
+      );
+
+      setIsLoggingIn(false);
+    }
+  };
+
+  // Check whether the logged-in user is authorized
+  const checkAuthorizedUser = async () => {
+    try {
+      setCheckingSession(true);
+
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
+
+      if (!session?.user?.email) {
+        setCheckingSession(false);
+        return;
+      }
+
+      const userEmail = session.user.email.toLowerCase();
+
+      console.log("Logged in user:", userEmail);
+
+      const { data, error } = await supabase
+        .from("allowed_users")
+        .select("email")
+        .eq("email", userEmail)
+        .maybeSingle();
+
+      if (error) {
+        console.error("Authorization error:", error);
+
+        setMessage(
+          "Unable to verify your access. Please contact the administrator."
+        );
+
+        await supabase.auth.signOut();
+
+        return;
+      }
+
+      // User is not authorized
+      if (!data) {
+        await supabase.auth.signOut();
+
+        setMessage(
+          `Access denied. ${userEmail} is not an authorized admin.`
+        );
+
+        return;
+      }
+
+      // User is authorized
       sessionStorage.setItem(
         "hlawndo-admin-logged-in",
         "true"
       );
 
-      /*
-      Redirect to Admin Console
-      */
-
       router.replace("/admin");
 
-      return;
-    }
+    } catch (error) {
+      console.error("Session check error:", error);
 
-    setMessage(
-      "Incorrect Admin ID or Password."
-    );
+      setMessage(
+        "Something went wrong while checking your login."
+      );
+
+    } finally {
+      setCheckingSession(false);
+      setIsLoggingIn(false);
+    }
   };
+
+  useEffect(() => {
+    // Check existing session when page loads
+    checkAuthorizedUser();
+
+    // Listen for Google OAuth login completion
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        console.log("Auth event:", event);
+
+        if (event === "SIGNED_IN" && session?.user) {
+          checkAuthorizedUser();
+        }
+      }
+    );
+
+    return () => {
+      subscription.unsubscribe();
+    };
+  }, []);
 
   return (
     <main className="flex min-h-screen items-center justify-center bg-[#080d14] px-5 py-10 text-white">
       <div className="w-full max-w-md">
-
-        {/* BACK BUTTON */}
 
         <button
           type="button"
@@ -79,13 +140,10 @@ export default function AdminLoginPage() {
           ← Back to Store
         </button>
 
-        {/* LOGIN CARD */}
-
         <div className="rounded-3xl border border-white/10 bg-[#0d141d] p-7 shadow-2xl md:p-10">
 
-          {/* HEADER */}
-
           <div className="text-center">
+
             <p className="text-xs tracking-[0.3em] text-[#e9a33f]">
               HLAWNDO ELECTRONICS
             </p>
@@ -102,12 +160,10 @@ export default function AdminLoginPage() {
             </h1>
 
             <p className="mt-3 text-sm text-gray-400">
-              Enter your administrator credentials to
-              access the admin console.
+              Sign in with your authorized Google account.
             </p>
-          </div>
 
-          {/* ERROR MESSAGE */}
+          </div>
 
           {message && (
             <div className="mt-6 rounded-xl border border-red-500/30 bg-red-500/10 px-4 py-3 text-sm text-red-400">
@@ -115,77 +171,24 @@ export default function AdminLoginPage() {
             </div>
           )}
 
-          {/* LOGIN FORM */}
-
-          <form
-            onSubmit={handleLogin}
-            className="mt-8 space-y-5"
+          <button
+            type="button"
+            onClick={handleGoogleLogin}
+            disabled={isLoggingIn || checkingSession}
+            className="mt-8 flex w-full items-center justify-center gap-3 rounded-xl bg-white px-6 py-4 font-bold text-black transition hover:bg-gray-200 disabled:cursor-not-allowed disabled:opacity-60"
           >
-
-            {/* ADMIN ID */}
-
-            <div>
-              <label className="mb-2 block text-sm text-gray-400">
-                Admin ID
-              </label>
-
-              <input
-                type="text"
-                value={adminId}
-                onChange={(event) => {
-                  setAdminId(event.target.value);
-                  setMessage("");
-                }}
-                placeholder="Enter Admin ID"
-                autoComplete="username"
-                disabled={isLoggingIn}
-                className="w-full rounded-xl border border-white/10 bg-[#080d14] px-4 py-4 text-white outline-none transition placeholder:text-gray-600 focus:border-[#e9a33f] disabled:cursor-not-allowed disabled:opacity-60"
-              />
-            </div>
-
-            {/* PASSWORD */}
-
-            <div>
-              <label className="mb-2 block text-sm text-gray-400">
-                Password
-              </label>
-
-              <input
-                type="password"
-                value={password}
-                onChange={(event) => {
-                  setPassword(event.target.value);
-                  setMessage("");
-                }}
-                placeholder="Enter Password"
-                autoComplete="current-password"
-                disabled={isLoggingIn}
-                className="w-full rounded-xl border border-white/10 bg-[#080d14] px-4 py-4 text-white outline-none transition placeholder:text-gray-600 focus:border-[#e9a33f] disabled:cursor-not-allowed disabled:opacity-60"
-              />
-            </div>
-
-            {/* LOGIN BUTTON */}
-
-            <button
-              type="submit"
-              disabled={isLoggingIn}
-              className="w-full rounded-xl bg-[#e9a33f] px-6 py-4 font-bold text-black transition hover:bg-[#ffd078] disabled:cursor-not-allowed disabled:opacity-60"
-            >
-              {isLoggingIn
-                ? "Opening Admin Console..."
-                : "Login to Admin Console →"}
-            </button>
-
-          </form>
-
-          {/* FOOTER */}
+            {checkingSession
+              ? "Checking session..."
+              : isLoggingIn
+              ? "Signing in..."
+              : "🔵 Continue with Google"}
+          </button>
 
           <p className="mt-7 text-center text-xs text-gray-600">
-            Authorized administrators only.
+            Authorized users only.
           </p>
 
         </div>
-
       </div>
     </main>
   );
