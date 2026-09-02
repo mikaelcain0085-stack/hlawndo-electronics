@@ -2445,6 +2445,26 @@ export default function Home() {
         © 2024 Hlawndo Electronics. All rights reserved.
         <br />
         Admin: 9089993697 / 6909917041
+
+        <div className="mt-4 flex items-center justify-center gap-4 text-xs">
+          <a
+            href="/privacy-policy"
+            className="transition hover:text-[#e9a33f]"
+          >
+            Privacy Policy
+          </a>
+
+          <span className="text-gray-700">
+            |
+          </span>
+
+          <a
+            href="/terms"
+            className="transition hover:text-[#e9a33f]"
+          >
+            Terms of Service
+          </a>
+        </div>
       </footer>
 
       <ChatWidget />
