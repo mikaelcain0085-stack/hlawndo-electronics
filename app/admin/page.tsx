@@ -354,21 +354,52 @@ export default function AdminPage() {
   */
 
   useEffect(() => {
-    const isAdminLoggedIn =
-      sessionStorage.getItem(
-        ADMIN_LOGIN_KEY
-      );
+    const verifyAdmin = async () => {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
 
-    if (isAdminLoggedIn !== "true") {
-      router.replace("/admin-login");
-      return;
-    }
+      if (!session?.user?.email) {
+        sessionStorage.removeItem(ADMIN_LOGIN_KEY);
+        router.replace("/admin-login");
+        return;
+      }
 
-    setIsAuthorized(true);
+      const userEmail = session.user.email.toLowerCase();
 
-    loadProducts();
-    loadOrders();
-    loadEnquiries();
+      const { data, error } = await supabase
+        .from("allowed_users")
+        .select("email")
+        .eq("email", userEmail)
+        .maybeSingle();
+
+      if (error || !data) {
+        await supabase.auth.signOut();
+        sessionStorage.removeItem(ADMIN_LOGIN_KEY);
+        router.replace("/admin-login");
+        return;
+      }
+
+      setIsAuthorized(true);
+
+      loadProducts();
+      loadOrders();
+      loadEnquiries();
+    };
+
+    verifyAdmin();
+
+    const {
+      data: { subscription },
+    } = supabase.auth.onAuthStateChange((event) => {
+      if (event === "SIGNED_OUT") {
+        router.replace("/admin-login");
+      }
+    });
+
+    return () => {
+      subscription.unsubscribe();
+    };
   }, [router]);
 
   /*
@@ -1331,7 +1362,9 @@ export default function AdminPage() {
   ========================================
   */
 
-  const handleLogout = () => {
+  const handleLogout = async () => {
+    await supabase.auth.signOut();
+
     sessionStorage.removeItem(
       ADMIN_LOGIN_KEY
     );
