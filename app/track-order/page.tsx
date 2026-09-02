@@ -74,15 +74,14 @@ export default function TrackOrderPage() {
 
     try {
       const { data, error } =
-        await supabase
-          .from("orders")
-          .select("*")
-          .eq("id", orderId)
-          .eq(
-            "phone",
-            customerPhone.trim()
-          )
-          .maybeSingle();
+        await supabase.rpc(
+          "get_order_for_tracking",
+          {
+            p_order_id: orderId,
+            p_phone:
+              customerPhone.trim(),
+          }
+        );
 
       if (error) {
         console.error(
@@ -97,13 +96,19 @@ export default function TrackOrderPage() {
         return null;
       }
 
-      if (!data) {
+      const foundOrder =
+        Array.isArray(data) &&
+        data.length > 0
+          ? data[0]
+          : null;
+
+      if (!foundOrder) {
         return null;
       }
 
-      setOrder(data);
+      setOrder(foundOrder);
 
-      return data;
+      return foundOrder;
     } catch (error) {
       console.error(
         "Unexpected order error:",
@@ -189,15 +194,13 @@ export default function TrackOrderPage() {
 
     try {
       const { data, error } =
-        await supabase
-          .from("orders")
-          .select("*")
-          .eq("id", order.id)
-          .eq(
-            "phone",
-            order.phone
-          )
-          .maybeSingle();
+        await supabase.rpc(
+          "get_order_for_tracking",
+          {
+            p_order_id: order.id,
+            p_phone: order.phone,
+          }
+        );
 
       if (error) {
         console.error(
@@ -212,7 +215,13 @@ export default function TrackOrderPage() {
         return;
       }
 
-      if (!data) {
+      const refreshedOrder =
+        Array.isArray(data) &&
+        data.length > 0
+          ? data[0]
+          : null;
+
+      if (!refreshedOrder) {
         setMessage(
           "Order could not be found."
         );
@@ -220,10 +229,10 @@ export default function TrackOrderPage() {
         return;
       }
 
-      setOrder(data);
+      setOrder(refreshedOrder);
 
       setMessage(
-        `Order status refreshed: ${data.status}`
+        `Order status refreshed: ${refreshedOrder.status}`
       );
 
       setTimeout(() => {
@@ -269,17 +278,15 @@ export default function TrackOrderPage() {
 
     try {
       const { data, error } =
-        await supabase
-          .from("orders")
-          .update({
-            status: "Cancelled",
-            cancellation_reason:
+        await supabase.rpc(
+          "cancel_order",
+          {
+            p_order_id: order.id,
+            p_phone: order.phone,
+            p_reason:
               cancellationReason.trim(),
-          })
-          .eq("id", order.id)
-          .eq("phone", order.phone)
-          .select()
-          .single();
+          }
+        );
 
       if (error) {
         console.error(
@@ -294,8 +301,14 @@ export default function TrackOrderPage() {
         return;
       }
 
-      if (data) {
-        setOrder(data);
+      const updatedOrder =
+        Array.isArray(data) &&
+        data.length > 0
+          ? data[0]
+          : null;
+
+      if (updatedOrder) {
+        setOrder(updatedOrder);
       }
 
       setShowCancelBox(false);
@@ -334,24 +347,23 @@ export default function TrackOrderPage() {
       setInterval(async () => {
         try {
           const { data, error } =
-            await supabase
-              .from("orders")
-              .select("*")
-              .eq(
-                "id",
-                order.id
-              )
-              .eq(
-                "phone",
-                order.phone
-              )
-              .maybeSingle();
+            await supabase.rpc(
+              "get_order_for_tracking",
+              {
+                p_order_id: order.id,
+                p_phone: order.phone,
+              }
+            );
 
-          if (
+          const latestOrder =
             !error &&
-            data
-          ) {
-            setOrder(data);
+            Array.isArray(data) &&
+            data.length > 0
+              ? data[0]
+              : null;
+
+          if (latestOrder) {
+            setOrder(latestOrder);
           }
         } catch (error) {
           console.error(
