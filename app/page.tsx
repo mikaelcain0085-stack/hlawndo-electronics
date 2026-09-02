@@ -643,36 +643,21 @@ export default function Home() {
         }));
 
       const {
-        data: orderData,
+        data: placeOrderResult,
         error: orderError,
-      } = await supabase
-        .from("orders")
-        .insert([
-          {
-            customer_name:
-              customerName.trim(),
-
-            phone:
-              phone.trim(),
-
-            address:
-              address.trim(),
-
-            payment_method:
-              paymentMethod,
-
-            total:
-              cartTotal,
-
-            items:
-              orderItems,
-
-            status:
-              "Pending",
-          },
-        ])
-        .select()
-        .single();
+      } = await supabase.rpc(
+        "place_order",
+        {
+          p_customer_name:
+            customerName.trim(),
+          p_phone: phone.trim(),
+          p_address: address.trim(),
+          p_payment_method:
+            paymentMethod,
+          p_total: cartTotal,
+          p_items: orderItems,
+        }
+      );
 
       if (orderError) {
         console.error(
@@ -692,53 +677,23 @@ export default function Home() {
         return;
       }
 
-      for (
-        const cartItem of cart
-      ) {
-        const latestProduct =
-          latestProducts?.find(
-            (product) =>
-              product.id ===
-              cartItem.id
-          );
+      const newOrderId =
+        Array.isArray(placeOrderResult) &&
+        placeOrderResult.length > 0
+          ? placeOrderResult[0].id
+          : null;
 
-        if (!latestProduct) {
-          continue;
-        }
+      if (!newOrderId) {
+        setCheckoutError(
+          "Could not place your order. Please try again."
+        );
 
-        const newStock =
-          latestProduct.stock -
-          cartItem.quantity;
-
-        const {
-          error: stockUpdateError,
-        } = await supabase
-          .from("products")
-          .update({
-            stock:
-              Math.max(
-                newStock,
-                0
-              ),
-          })
-          .eq(
-            "id",
-            cartItem.id
-          );
-
-        if (stockUpdateError) {
-          console.error(
-            "Stock update error:",
-            stockUpdateError
-          );
-        }
+        return;
       }
 
       await loadProducts();
 
-      setOrderId(
-        orderData.id
-      );
+      setOrderId(newOrderId);
       setQrPaymentAmount(cartTotal);
 
       setCart([]);
@@ -2497,4 +2452,3 @@ export default function Home() {
     </main>
   );
 }
-
