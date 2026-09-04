@@ -950,9 +950,13 @@ export default function Home() {
 
           <div className="flex items-center gap-3">
 
-            <div className="flex h-8 w-8 items-center justify-center text-xl text-[#e9a33f]">
-              ✦
-            </div>
+            <div className="flex h-10 w-10 shrink-0 items-center justify-center">
+  <img
+    src="/images/he-logo.png"
+    alt="Hlawndo Electronics"
+    className="h-full w-full object-contain"
+  />
+</div>
 
             <div className="text-base font-medium tracking-tight sm:text-lg md:text-2xl">
               HLAWNDO{" "}
