@@ -1489,7 +1489,7 @@ export default function Home() {
 
           ) : (
 
-            <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
+            <div className="mt-10 grid grid-cols-2 gap-3 sm:gap-6 lg:grid-cols-3">
 
               {filteredProducts.map(
                 (product) => (
@@ -1499,9 +1499,7 @@ export default function Home() {
                     className="group overflow-hidden rounded-3xl border border-white/10 bg-[#0b1119] transition duration-500 hover:-translate-y-2 hover:border-[#e9a33f]/50 hover:shadow-[0_20px_60px_rgba(0,0,0,0.4)]"
                   >
 
-                    <div className="relative h-64 overflow-hidden bg-gradient-to-br from-[#151d27] to-[#080d14]">
-
-                      {product.image ? (
+                    <div className="relative h-40 overflow-hidden bg-gradient-to-br from-[#151d27] to-[#080d14] sm:h-64">                      {product.image ? (
 
                         <img
                           src={product.image}
@@ -1531,7 +1529,7 @@ export default function Home() {
 
                     </div>
 
-                    <div className="p-7">
+                    <div className="p-3 sm:p-7">
 
                       <div className="flex items-center justify-between gap-3">
 
