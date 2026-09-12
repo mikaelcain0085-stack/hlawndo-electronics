@@ -20,45 +20,47 @@ type CartItem = Product & {
 const categories = [
   {
     key: "laptops",
-    icon: "💻",
+    image: "/images/categories/laptops.jpg",
     items: "LAPTOPS",
     title: "Laptops & Computers",
     glow: "bg-[#e9a33f]/10",
-    iconStyle: "border-[#e9a33f]/20 bg-[#e9a33f]/10",
   },
   {
     key: "smartphones",
-    icon: "📱",
+    image: "/images/categories/smartphones.jpg",
     items: "SMARTPHONES",
     title: "Smartphones & Accessories",
     glow: "bg-blue-500/10",
-    iconStyle: "border-blue-400/20 bg-blue-400/10",
   },
   {
     key: "audio",
-    icon: "🎧",
+    image: "/images/categories/audio.jpg",
     items: "AUDIO",
     title: "Audio & Headphones",
     glow: "bg-purple-500/10",
-    iconStyle: "border-purple-400/20 bg-purple-400/10",
   },
   {
     key: "tv",
-    icon: "📺",
+    image: "/images/categories/tv.jpg",
     items: "TELEVISIONS",
     title: "Smart TVs",
     glow: "bg-cyan-500/10",
-    iconStyle: "border-cyan-400/20 bg-cyan-400/10",
   },
   {
     key: "chargers",
-    icon: "🔌",
+    image: "/images/categories/chargers.jpg",
     items: "CHARGERS & CABLES",
     title: "Charger & Data Cables",
     glow: "bg-red-500/10",
-    iconStyle: "border-red-400/20 bg-red-400/10",
   },
 ];
+const categoryCardImages: Record<string, string> = {
+  laptops: "/images/categories/laptops.jpg",
+  smartphones: "/images/categories/smartphones.jpg",
+  audio: "/images/categories/audio.jpg",
+  tv: "/images/categories/tv.jpg",
+  chargers: "/images/categories/chargers.jpg",
+};
 
 export default function Home() {
   const [products, setProducts] = useState<Product[]>([]);
@@ -1246,60 +1248,45 @@ export default function Home() {
               (category) => (
 
                 <button
-                  key={category.key}
-                  onClick={() =>
-                    selectCategory(
-                      category.key
-                    )
-                  }
-                  className={`group relative min-h-[300px] overflow-hidden rounded-3xl border bg-gradient-to-br from-[#151d27] via-[#101720] to-[#080d14] p-8 text-left transition duration-500 hover:-translate-y-2 hover:border-[#e9a33f]/60 hover:shadow-[0_25px_70px_rgba(233,163,63,0.18)] ${
-                    activeCategory ===
-                    category.key
-                      ? "border-[#e9a33f]"
-                      : "border-white/10"
-                  }`}
-                >
+  key={category.key}
+  onClick={() => selectCategory(category.key)}
+  className={`group relative min-h-[320px] overflow-hidden rounded-3xl border text-left transition duration-500 hover:-translate-y-2 hover:border-[#e9a33f] ${
+    activeCategory === category.key
+      ? "border-[#e9a33f]"
+      : "border-white/10"
+  }`}
+>
+  {/* Full-card image */}
+  <div className="absolute inset-0 z-0">
+    <img
+     src={categoryCardImages[category.key]}
+      alt={category.title}
+      className="absolute inset-0 h-full w-full object-cover transition duration-700 group-hover:scale-105"
+    />
 
-                  <div
-                    className={`absolute -right-10 -top-10 h-44 w-44 rounded-full ${category.glow} blur-3xl transition duration-500 group-hover:scale-150`}
-                  />
+    {/* Dark overlay */}
+    <div className="absolute inset-0 bg-gradient-to-t from-[#080d14] via-[#080d14]/50 to-transparent" />
+  </div>
 
-                  <div className="relative flex min-h-[235px] flex-col justify-between">
+  {/* Card text */}
+  <div className="relative z-10 flex min-h-[320px] flex-col justify-end p-8">
+    <p className="text-xs tracking-[0.25em] text-slate-300">
+      {category.items}
+    </p>
 
-                    <div>
+    <h3 className="mt-3 text-2xl font-normal tracking-tight text-white transition duration-300 group-hover:text-[#e9a33f]">
+      {category.title}
+    </h3>
 
-                      <div
-                        className={`flex h-16 w-16 items-center justify-center rounded-2xl border ${category.iconStyle} text-4xl transition duration-500 group-hover:scale-110`}
-                      >
-                        {category.icon}
-                      </div>
+    <div className="mt-5 flex items-center justify-between border-t border-white/10 pt-5 text-sm font-medium text-[#e9a33f]">
+      <span>Explore category</span>
 
-                      <p className="mt-10 text-xs tracking-[0.25em] text-slate-400">
-                        {category.items}
-                      </p>
-
-                      <h3 className="mt-3 text-2xl font-normal tracking-tight transition duration-300 group-hover:text-[#e9a33f]">
-                        {category.title}
-                      </h3>
-
-                    </div>
-
-                    <div className="flex items-center justify-between border-t border-white/5 pt-5 text-sm font-medium text-[#e9a33f]">
-
-                      <span>
-                        Explore category
-                      </span>
-
-                      <span className="text-xl transition duration-300 group-hover:translate-x-2">
-                        →
-                      </span>
-
-                    </div>
-
-                  </div>
-
-                </button>
-
+      <span className="text-xl transition duration-300 group-hover:translate-x-2">
+        →
+      </span>
+    </div>
+  </div>
+</button>
               )
             )}
 
@@ -1351,31 +1338,22 @@ export default function Home() {
                   All Products
                 </button>
 
-                {categories.map(
-                  (category) => (
-
-                    <button
-                      key={category.key}
-                      onClick={() => {
-                        setActiveCategory(
-                          category.key
-                        );
-                        setSearchQuery("");
-                      }}
-                      className={`rounded-full border px-5 py-2 text-sm transition ${
-                        activeCategory ===
-                        category.key
-                          ? "border-[#e9a33f] bg-[#e9a33f] text-black"
-                          : "border-white/10 text-gray-300 hover:border-[#e9a33f]"
-                      }`}
-                    >
-                      {category.icon}{" "}
-                      {category.title}
-                    </button>
-
-                  )
-                )}
-
+               {categories.map((category) => (
+  <button
+    key={category.key}
+    onClick={() => {
+      setActiveCategory(category.key);
+      setSearchQuery("");
+    }}
+    className={`rounded-full border px-5 py-2 text-sm transition ${
+      activeCategory === category.key && !searchQuery
+        ? "border-[#e9a33f] bg-[#e9a33f] text-black"
+        : "border-white/10 text-gray-300 hover:border-[#e9a33f]"
+    }`}
+  >
+    {category.title}
+  </button>
+))}
               </div>
 
             </div>
