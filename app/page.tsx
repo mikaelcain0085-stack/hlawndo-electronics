@@ -2274,22 +2274,96 @@ export default function Home() {
 
       )}
 
-      {/* DEALS */}
+     {/* SPECIAL OFFERS */}
+<section
+  id="deals"
+  className="relative min-h-screen overflow-hidden border-t border-white/10 bg-[#060a0f]"
+>
+  {/* Storeroom background */}
+  <div className="absolute inset-0">
+    <img
+      src="/images/store-room.jpg"
+      alt="Hlawndo Electronics storeroom"
+      className="h-full w-full object-cover"
+    />
 
-      <section
-        id="deals"
-        className="border-t border-white/10 bg-[#080d14] px-6 py-20 text-center"
-      >
+    {/* Premium dark cinematic overlay */}
+   <div className="absolute inset-0 bg-black/35" />
 
-        <p className="text-xs tracking-[0.3em] text-gray-500">
-          SPECIAL OFFERS
+<div className="absolute inset-0 bg-gradient-to-r from-[#060a0f]/80 via-[#060a0f]/40 to-transparent" />
+
+<div className="absolute inset-0 bg-gradient-to-t from-[#060a0f]/70 via-transparent to-[#060a0f]/25" />
+  </div>
+
+  {/* Content */}
+  <div className="relative z-10 flex min-h-screen items-center px-6 py-24 md:px-14 lg:px-20">
+    <div className="mx-auto w-full max-w-[1400px]">
+      <div className="max-w-3xl">
+
+        {/* Eyebrow */}
+        <p className="text-xs font-medium tracking-[0.4em] text-[#e9a33f]">
+          EXCLUSIVE DEALS
         </p>
 
-        <h2 className="mt-5 text-xl font-medium sm:text-xl">
-          Bungrua rawn thleng thar a awm leh zel dawn e.Harsatna i neih chuan a hnuaia Enquiry Form atang hian i harsatna minlo hrilh in, i mamawh min lo zawt ang che.
+        {/* Main heading */}
+        <h2 className="mt-6 text-6xl font-medium leading-[0.95] tracking-tight sm:text-7xl lg:text-8xl">
+          SPECIAL
+          <br />
+          <span className="bazaar-gradient">
+            OFFERS
+          </span>
         </h2>
 
-      </section>
+        {/* Brand statement */}
+        <p className="mt-8 max-w-2xl text-xl leading-relaxed text-white sm:text-2xl">
+          Bungrua rawn thlengthar a awm leh zel dawn e.
+          <br />
+         In duh leh mamawh ang min hrilh ula kan chah zel ang.
+        </p>
+
+        <p className="mt-5 max-w-xl text-sm leading-7 text-gray-300 sm:text-base">
+          Discover exceptional deals on trusted electronics from
+          Hlawndo Electronics. Genuine products, competitive prices,
+          and dependable service — all in one place.
+        </p>
+
+        {/* Premium Track Order Button */}
+        <div className="mt-10">
+          <a
+            href="/track-order"
+            className="group inline-flex items-center gap-4 rounded-full border border-[#e9a33f]/70 bg-[#e9a33f]/10 px-7 py-4 text-sm font-semibold tracking-wide text-white backdrop-blur-md transition duration-500 hover:border-[#e9a33f] hover:bg-[#e9a33f] hover:text-black hover:shadow-[0_0_40px_rgba(233,163,63,0.25)]"
+          >
+            <span className="flex h-9 w-9 items-center justify-center rounded-full bg-[#e9a33f] text-black transition duration-500 group-hover:bg-black group-hover:text-[#e9a33f]">
+              📦
+            </span>
+
+            <span>
+              TRACK YOUR ORDER
+            </span>
+
+            <span className="text-xl transition duration-300 group-hover:translate-x-1">
+              →
+            </span>
+          </a>
+
+          <p className="mt-4 ml-2 text-xs tracking-[0.15em] text-gray-400">
+            FAST. RELIABLE. ALWAYS WITH YOU.
+          </p>
+        </div>
+
+        {/* Brand line */}
+        <div className="mt-14 flex items-center gap-4">
+          <div className="h-px w-16 bg-[#e9a33f]/60" />
+
+          <p className="text-xs tracking-[0.25em] text-gray-400">
+            HLAWNDO ELECTRONICS
+          </p>
+        </div>
+
+      </div>
+    </div>
+  </div>
+</section>
 
       {/* ENQUIRY FORM */}
 
