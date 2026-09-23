@@ -70,6 +70,11 @@ export default function Home() {
 
   const [activeCategory, setActiveCategory] = useState("all");
 
+  const PRODUCTS_PER_PAGE = 12;
+
+const [currentPage, setCurrentPage] = useState(1);
+const [isChangingPage, setIsChangingPage] = useState(false);
+
   // PRODUCT SEARCH
   const [searchQuery, setSearchQuery] = useState("");
   const [isSearchOpen, setIsSearchOpen] = useState(false);
@@ -240,15 +245,30 @@ export default function Home() {
     }
 
     if (category === "smartphones") {
-      return (
-        productCategory.includes("phone") ||
-        productCategory.includes("smartphone") ||
-        productCategory.includes("mobile") ||
-        productName.includes("iphone") ||
-        productName.includes("samsung") ||
-        productName.includes("phone")
-      );
-    }
+  const isOtherCategory =
+    productCategory.includes("tv") ||
+    productCategory.includes("television") ||
+    productCategory.includes("audio") ||
+    productCategory.includes("headphone") ||
+    productCategory.includes("earphone") ||
+    productCategory.includes("speaker") ||
+    productCategory.includes("charger") ||
+    productCategory.includes("cable");
+
+  if (isOtherCategory) {
+    return false;
+  }
+
+  return (
+    productCategory.includes("phone") ||
+    productCategory.includes("smartphone") ||
+    productCategory.includes("mobile") ||
+    productCategory.includes("accessor") ||
+    productName.includes("iphone") ||
+    productName.includes("phone") ||
+    productName.includes("mobile")
+  );
+}
 
     if (category === "audio") {
       return (
@@ -321,18 +341,58 @@ export default function Home() {
     activeCategory,
     searchQuery,
   ]);
+  const totalPages = Math.ceil(
+  filteredProducts.length / PRODUCTS_PER_PAGE
+);
+
+const paginatedProducts = useMemo(() => {
+  const startIndex =
+    (currentPage - 1) * PRODUCTS_PER_PAGE;
+
+  return filteredProducts.slice(
+    startIndex,
+    startIndex + PRODUCTS_PER_PAGE
+  );
+}, [
+  filteredProducts,
+  currentPage,
+]);
+const changePage = (page: number) => {
+  if (
+    page < 1 ||
+    page > totalPages ||
+    page === currentPage
+  ) {
+    return;
+  }
+
+  setIsChangingPage(true);
+
+  setTimeout(() => {
+    setCurrentPage(page);
+    setIsChangingPage(false);
+
+    document
+      .getElementById("products")
+      ?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+  }, 350);
+};
 
   /*
     CATEGORY FILTER + SCROLL
   */
 
   const selectCategory = (
-    category: string
-  ) => {
-    setActiveCategory(category);
+  category: string
+) => {
+  setActiveCategory(category);
 
-    setSearchQuery("");
+  setSearchQuery("");
 
+  setCurrentPage(1);
     setTimeout(() => {
       document
         .getElementById("products")
@@ -347,12 +407,13 @@ export default function Home() {
   */
 
   const handleSearch = (
-    value: string
-  ) => {
-    setSearchQuery(value);
+  value: string
+) => {
+  setSearchQuery(value);
 
-    setActiveCategory("all");
+  setActiveCategory("all");
 
+  setCurrentPage(1);
     setTimeout(() => {
       document
         .getElementById("products")
@@ -1325,8 +1386,10 @@ export default function Home() {
 
                 <button
                   onClick={() => {
-                    setActiveCategory("all");
-                    setSearchQuery("");
+  setActiveCategory("all");
+  setSearchQuery("");
+  setCurrentPage(1);
+
                   }}
                   className={`rounded-full border px-5 py-2 text-sm transition ${
                     activeCategory === "all" &&
@@ -1342,9 +1405,10 @@ export default function Home() {
   <button
     key={category.key}
     onClick={() => {
-      setActiveCategory(category.key);
-      setSearchQuery("");
-    }}
+  setActiveCategory(category.key);
+  setSearchQuery("");
+  setCurrentPage(1);
+}}
     className={`rounded-full border px-5 py-2 text-sm transition ${
       activeCategory === category.key && !searchQuery
         ? "border-[#e9a33f] bg-[#e9a33f] text-black"
@@ -1469,9 +1533,8 @@ export default function Home() {
 
             <div className="mt-10 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
 
-              {filteredProducts.map(
-                (product) => (
-
+              {paginatedProducts.map(
+  (product) => (
                   <div
                     key={product.id}
                     className="group overflow-hidden rounded-3xl border border-white/10 bg-[#0b1119] transition duration-500 hover:-translate-y-2 hover:border-[#e9a33f]/50 hover:shadow-[0_20px_60px_rgba(0,0,0,0.4)]"
@@ -1494,6 +1557,7 @@ export default function Home() {
                         </div>
 
                       )}
+                      
 
                       {product.stock <= 0 && (
 
@@ -1573,6 +1637,111 @@ export default function Home() {
           )}
 
         </div>
+        {totalPages > 1 && (
+  <div className="mt-14 flex flex-col items-center gap-5">
+
+    {/* Pagination loading indicator */}
+
+    <div
+      className={`flex h-5 items-center gap-2 text-xs text-gray-500 transition-opacity duration-300 ${
+        isChangingPage
+          ? "opacity-100"
+          : "opacity-0"
+      }`}
+    >
+      <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/10 border-t-[#e9a33f]" />
+
+      Loading products...
+    </div>
+
+    {/* Pagination */}
+
+    <div className="flex items-center gap-2 rounded-2xl border border-white/10 bg-[#0b1119]/80 p-2 shadow-[0_15px_50px_rgba(0,0,0,0.25)] backdrop-blur-xl">
+
+      {/* Previous */}
+
+      <button
+        type="button"
+        disabled={
+          currentPage === 1 ||
+          isChangingPage
+        }
+        onClick={() =>
+          changePage(currentPage - 1)
+        }
+        className="flex h-10 items-center justify-center rounded-xl px-3 text-sm text-orange-600 transition hover:bg-white/5 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
+      >
+        ←
+        <span className="ml-1 hidden sm:inline">
+          Prev
+        </span>
+      </button>
+
+      {/* Page Numbers */}
+
+      <div className="flex items-center gap-1">
+
+        {Array.from(
+          { length: totalPages },
+          (_, index) => index + 1
+        ).map((page) => (
+
+          <button
+            key={page}
+            type="button"
+            disabled={isChangingPage}
+            onClick={() =>
+              changePage(page)
+            }
+            className={`flex h-10 min-w-10 items-center justify-center rounded-xl px-3 text-sm font-medium transition ${
+              currentPage === page
+                ? "bg-[#e9a33f] text-black shadow-[0_8px_25px_rgba(233,163,63,0.20)]"
+                : "text-gray-400 hover:bg-white/5 hover:text-white"
+            } disabled:cursor-not-allowed`}
+          >
+            {page}
+          </button>
+
+        ))}
+
+      </div>
+
+      {/* Next */}
+
+      <button
+        type="button"
+        disabled={
+          currentPage === totalPages ||
+          isChangingPage
+        }
+        onClick={() =>
+          changePage(currentPage + 1)
+        }
+        className="flex h-10 items-center justify-center rounded-xl px-3 text-sm text-orange-600 transition hover:bg-white/5 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
+      >
+        <span className="mr-1 hidden sm:inline">
+          Next
+        </span>
+        →
+      </button>
+
+    </div>
+
+    {/* Page information */}
+
+    <p className="text-xs tracking-wide text-gray-600">
+      Page{" "}
+      <span className="text-gray-400">
+        {currentPage}
+      </span>{" "}
+      of{" "}
+      <span className="text-gray-400">
+        {totalPages}
+      </span>
+    </p>
+
+  </div>
+)}
 
       </section>
 
