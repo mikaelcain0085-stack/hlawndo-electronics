@@ -76,14 +76,99 @@ export default function AdminPage() {
 
   const [activeCategory, setActiveCategory] =
     useState("all");
-    const filteredProducts = useMemo(() => {
-  if (activeCategory === "all") {
-    return products;
+    const productMatchesCategory = (
+  product: Product,
+  category: string
+) => {
+  const productCategory =
+    product.category.toLowerCase();
+
+  const productName =
+    product.name.toLowerCase();
+
+  if (category === "all") {
+    return true;
   }
 
-  return products.filter((product) => {
-    return product.category === activeCategory;
-  });
+ if (category === "Laptops") {
+    return (
+      productCategory.includes("laptop") ||
+      productCategory.includes("computer") ||
+      productCategory.includes("desktop") ||
+      productName.includes("laptop") ||
+      productName.includes("macbook") ||
+      productName.includes("computer")
+    );
+  }
+
+ if (category === "Smartphones") {
+  const isOtherCategory =
+    productCategory.includes("tv") ||
+    productCategory.includes("television") ||
+    productCategory.includes("audio") ||
+    productCategory.includes("headphone") ||
+    productCategory.includes("earphone") ||
+    productCategory.includes("speaker") ||
+    productCategory.includes("charger") ||
+    productCategory.includes("cable");
+
+  if (isOtherCategory) {
+    return false;
+  }
+
+  return (
+    productCategory.includes("phone") ||
+    productCategory.includes("smartphone") ||
+    productCategory.includes("mobile") ||
+    productCategory.includes("accessor") ||
+    productName.includes("iphone") ||
+    productName.includes("samsung") ||
+    productName.includes("phone") ||
+    productName.includes("mobile")
+  );
+}
+  if (category === "Audio") {
+    return (
+      productCategory.includes("audio") ||
+      productCategory.includes("headphone") ||
+      productCategory.includes("earphone") ||
+      productCategory.includes("speaker") ||
+      productName.includes("headphone") ||
+      productName.includes("earphone") ||
+      productName.includes("speaker")
+    );
+  }
+
+  if (category === "TV") {
+    return (
+      productCategory.includes("tv") ||
+      productCategory.includes("television") ||
+      productCategory.includes("smart tv") ||
+      productName.includes("tv")
+    );
+  }
+
+  if (category === "chargers") {
+    return (
+      productCategory.includes("charger") ||
+      productCategory.includes("cable") ||
+      productCategory.includes("data") ||
+      productName.includes("charger") ||
+      productName.includes("cable") ||
+      productName.includes("data cable")
+    );
+  }
+
+  return false;
+};
+
+const filteredProducts = useMemo(() => {
+  return products.filter((product) =>
+    productMatchesCategory(
+      product,
+      activeCategory
+    )
+  );
 }, [products, activeCategory]);
 
   const [form, setForm] =
@@ -94,6 +179,9 @@ export default function AdminPage() {
 
   const [editingId, setEditingId] =
     useState<number | null>(null);
+
+  const [showProductForm, setShowProductForm] =
+    useState(false);
 
   const [message, setMessage] =
     useState("");
@@ -122,6 +210,14 @@ export default function AdminPage() {
 
   const [selectedStatuses, setSelectedStatuses] =
     useState<Record<number, string>>({});
+
+  const PRODUCTS_PER_PAGE = 12;
+
+  const [currentProductPage, setCurrentProductPage] =
+  useState(1);
+
+  const [isChangingProductPage, setIsChangingProductPage] =
+  useState(false);
 
   const [enquiries, setEnquiries] =
     useState<Enquiry[]>([]);
@@ -464,6 +560,47 @@ export default function AdminPage() {
     );
   }, [products]);
 
+  const totalProductPages = Math.ceil(
+  filteredProducts.length / PRODUCTS_PER_PAGE
+);
+
+const paginatedProducts = useMemo(() => {
+  const startIndex =
+    (currentProductPage - 1) *
+    PRODUCTS_PER_PAGE;
+
+  return filteredProducts.slice(
+    startIndex,
+    startIndex + PRODUCTS_PER_PAGE
+  );
+}, [
+  filteredProducts,
+  currentProductPage,
+]);
+
+const changeProductPage = (page: number) => {
+  if (
+    page < 1 ||
+    page > totalProductPages ||
+    page === currentProductPage
+  ) {
+    return;
+  }
+
+  setIsChangingProductPage(true);
+
+  setTimeout(() => {
+    setCurrentProductPage(page);
+    setIsChangingProductPage(false);
+
+    document
+      .getElementById("inventory")
+      ?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+  }, 350);
+};
   /*
   ========================================
   HANDLE FORM CHANGES
@@ -1047,6 +1184,7 @@ export default function AdminPage() {
       setForm(emptyForm);
       setSelectedImage(null);
       setEditingId(null);
+      setShowProductForm(false);
 
       await loadProducts();
 
@@ -1101,10 +1239,7 @@ export default function AdminPage() {
         product.image,
     });
 
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth",
-    });
+    setShowProductForm(true);
   };
 
   /*
@@ -1165,6 +1300,7 @@ export default function AdminPage() {
           setEditingId(null);
           setForm(emptyForm);
           setSelectedImage(null);
+          setShowProductForm(false);
         }
 
         await loadProducts();
@@ -1198,7 +1334,9 @@ export default function AdminPage() {
     setEditingId(null);
     setSelectedImage(null);
     setForm(emptyForm);
+    setCompressionInfo(null);
     setMessage("");
+    setShowProductForm(false);
   };
 
   /*
@@ -1737,7 +1875,7 @@ export default function AdminPage() {
 
        <section
   
-  className="mb-10 grid gap-4 sm:grid-cols-2 xl:grid-cols-4"
+  className="mb-10 grid gap-4 sm:grid-cols-2 xl:grid-cols-5"
 >
 
           <a
@@ -1857,6 +1995,37 @@ export default function AdminPage() {
 
           </div>
 
+          <a
+            href="#customer-enquiries"
+            className="group block cursor-pointer rounded-3xl border border-white/10 bg-[#0b1018]/80 p-6 shadow-xl backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:border-purple-400/30"
+          >
+
+            <div className="flex items-start justify-between">
+
+              <div>
+
+                <p className="text-xs font-medium tracking-[0.15em] text-gray-500">
+                  CUSTOMER ENQUIRIES
+                </p>
+
+                <p className="mt-4 text-2xl font-medium text-purple-300">
+                  {enquiries.length}
+                </p>
+
+              </div>
+
+              <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-purple-400/10 text-2xl">
+                💬
+              </div>
+
+            </div>
+
+            <p className="mt-5 text-xs text-gray-500">
+              Questions and requests from customers
+            </p>
+
+          </a>
+
         </section>
 
         {/* INVENTORY ALERT */}
@@ -1894,9 +2063,13 @@ export default function AdminPage() {
 
         )}
 
-        {/* PRODUCT FORM */}
+        {/* PRODUCT FORM MODAL */}
 
-        <section className="overflow-hidden rounded-[2rem] border border-white/10 bg-[#0b1018]/85 shadow-2xl backdrop-blur-xl">
+        {showProductForm && (
+
+          <div className="fixed inset-0 z-50 overflow-y-auto bg-black/70 px-4 py-8 backdrop-blur-md sm:px-6">
+
+            <section className="mx-auto max-w-5xl overflow-hidden rounded-[2rem] border border-white/10 bg-[#0b1018]/95 shadow-2xl backdrop-blur-xl">
 
           <div className="border-b border-white/10 bg-gradient-to-r from-white/[0.03] to-transparent p-6 md:p-8">
 
@@ -1921,6 +2094,14 @@ export default function AdminPage() {
                 </p>
 
               </div>
+
+              <button
+                type="button"
+                onClick={cancelEdit}
+                className="rounded-2xl border border-white/10 bg-white/[0.02] px-5 py-3 text-sm text-gray-300 transition hover:border-red-400/50 hover:bg-red-500/10 hover:text-red-400"
+              >
+                Close
+              </button>
 
               {editingId !== null && (
 
@@ -2184,7 +2365,11 @@ export default function AdminPage() {
 
           </form>
 
-        </section>
+            </section>
+
+          </div>
+
+        )}
 
         {/* PRODUCT LIST */}
 
@@ -2192,6 +2377,15 @@ export default function AdminPage() {
   id="inventory"
   className="mt-20 scroll-mt-37"
 >
+
+          <div className="mb-7">
+            <a
+              href="#dashboard"
+              className="inline-flex items-center rounded-xl bg-orange-600 px-4 py-2.5 text-xs font-medium text-white transition hover:bg-[#e9a33f] hover:text-black"
+            >
+              ↑ Back to Dashboard
+            </a>
+          </div>
 
           <div className="mb-8 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
 
@@ -2207,6 +2401,25 @@ export default function AdminPage() {
   <p className="mt-3 text-sm text-gray-500">
     Manage all products currently available in your store.
   </p>
+
+  <div className="mt-6 flex flex-wrap gap-3">
+
+    <button
+      type="button"
+      onClick={() => {
+        setEditingId(null);
+        setForm(emptyForm);
+        setSelectedImage(null);
+        setCompressionInfo(null);
+        setMessage("");
+        setShowProductForm(true);
+      }}
+      className="rounded-2xl bg-gradient-to-r from-[#d88729] via-[#e9a33f] to-[#ffd078] px-5 py-3 text-sm font-black text-black shadow-[0_12px_35px_rgba(233,163,63,0.18)] transition duration-300 hover:-translate-y-0.5 hover:shadow-[0_16px_45px_rgba(233,163,63,0.28)]"
+    >
+      + Add New Product
+    </button>
+
+  </div>
   <div className="mt-6 flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
 
   {[
@@ -2241,6 +2454,7 @@ export default function AdminPage() {
       type="button"
       onClick={() => {
   setActiveCategory(category.value);
+  setCurrentProductPage(1);
 
   window.setTimeout(() => {
     document
@@ -2265,12 +2479,6 @@ export default function AdminPage() {
 </div>
 
 
-  <a
-    href="#dashboard"
-    className="mt-5 inline-flex items-center rounded-xl  bg-orange-600 px-4 py-2.5 text-xs font-medium text-white transition hover:border-[#e9a33f]/50 hover:bg-[#e9a33f]/10 hover:text-[#ffd078]"
-  >
-    ↑ Back to Dashboard
-  </a>
 </div>
 
             <div className="rounded-2xl border border-white/10 bg-[#0b1018] px-5 py-3 text-sm">
@@ -2318,10 +2526,11 @@ export default function AdminPage() {
             </div>
 
           ) : (
+              <>
 
             <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
 
-             {filteredProducts.map((product) => (
+             {paginatedProducts.map((product) => (
 
                 <div
                   key={product.id}
@@ -2438,16 +2647,140 @@ export default function AdminPage() {
 
             </div>
 
-          )}
+              
+
+            {totalProductPages > 1 && (
+              <div className="mt-16 flex flex-col items-center gap-5">
+
+                {/* LOADING INDICATOR */}
+
+                <div
+                  className={`flex h-5 items-center gap-2 text-xs text-gray-500 transition-opacity duration-300 ${
+                    isChangingProductPage
+                      ? "opacity-100"
+                      : "opacity-0"
+                  }`}
+                >
+                  <span className="h-3.5 w-3.5 animate-spin rounded-full border-2 border-white/10 border-t-[#e9a33f]" />
+
+                  Loading products...
+                </div>
+
+                {/* PAGINATION */}
+
+                <div className="flex items-center gap-2 rounded-2xl border border-white/10 bg-[#0b1119]/80 p-2 shadow-[0_15px_50px_rgba(0,0,0,0.25)] backdrop-blur-xl">
+
+                  {/* PREVIOUS */}
+
+                  <button
+                    type="button"
+                    disabled={
+                      currentProductPage === 1 ||
+                      isChangingProductPage
+                    }
+                    onClick={() =>
+                      changeProductPage(
+                        currentProductPage - 1
+                      )
+                    }
+                    className="flex h-10 items-center justify-center rounded-xl px-3 text-sm text-orange-600 transition hover:bg-white/5 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
+                  >
+                    ←
+                    <span className="ml-1 hidden sm:inline">
+                      Prev
+                    </span>
+                  </button>
+
+                  {/* PAGE NUMBERS */}
+
+                  <div className="flex items-center gap-1">
+
+                    {Array.from(
+                      {
+                        length: totalProductPages,
+                      },
+                      (_, index) => index + 1
+                    ).map((page) => (
+                      <button
+                        key={page}
+                        type="button"
+                        disabled={
+                          isChangingProductPage
+                        }
+                        onClick={() =>
+                          changeProductPage(page)
+                        }
+                        className={`flex h-10 min-w-10 items-center justify-center rounded-xl px-3 text-sm font-medium transition ${
+                          currentProductPage === page
+                            ? "bg-[#e9a33f] text-black shadow-[0_8px_25px_rgba(233,163,63,0.20)]"
+                            : "text-gray-400 hover:bg-white/5 hover:text-white"
+                        } disabled:cursor-not-allowed`}
+                      >
+                        {page}
+                      </button>
+                    ))}
+
+                  </div>
+
+                  {/* NEXT */}
+
+                  <button
+                    type="button"
+                    disabled={
+                      currentProductPage ===
+                        totalProductPages ||
+                      isChangingProductPage
+                    }
+                    onClick={() =>
+                      changeProductPage(
+                        currentProductPage + 1
+                      )
+                    }
+                    className="flex h-10 items-center justify-center rounded-xl px-3 text-sm text-orange-600 transition hover:bg-white/5 hover:text-white disabled:cursor-not-allowed disabled:opacity-30"
+                  >
+                    <span className="mr-1 hidden sm:inline">
+                      Next
+                    </span>
+                    →
+                  </button>
+
+                </div>
+
+                {/* PAGE COUNT */}
+
+                <p className="text-xs tracking-wide text-gray-600">
+                  Page{" "}
+                  <span className="text-gray-400">
+                    {currentProductPage}
+                  </span>{" "}
+                  of{" "}
+                  <span className="text-gray-400">
+                    {totalProductPages}
+                  </span>
+                </p>
+
+              </div>
+            )}
+
+           </>
+             )}
 
         </section>
 
         {/* ORDERS DASHBOARD */}
-
        <section
   id="customer-orders"
   className="mt-24 scroll-mt-35 border-t border-white/10 pt-20"
 >
+
+          <div className="mb-7">
+            <a
+              href="#dashboard"
+              className="inline-flex items-center rounded-xl bg-orange-600 px-4 py-2.5 text-xs font-medium text-white transition hover:bg-[#e9a33f] hover:text-black"
+            >
+              ↑ Back to Dashboard
+            </a>
+          </div>
 
           <div className="mb-10 flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
 
@@ -2472,12 +2805,6 @@ export default function AdminPage() {
               </p>
 
             </div>
-            <a
-  href="#dashboard"
-  className="mt-5 inline-flex items-center rounded-xl  bg-orange-600 px-4 py-2.5 text-xs text-white font-medium  transition hover:border-[#e9a33f]/50 hover:bg-[#e9a33f]/10 hover:text-[#ffd078]"
->
-  ↑ Back to Dashboard
-</a>
 
             <div className="flex flex-wrap items-center gap-3">
 
@@ -2950,7 +3277,19 @@ export default function AdminPage() {
 
         {/* ENQUIRIES DASHBOARD */}
 
-        <section className="mt-24 border-t border-white/10 pt-20">
+        <section
+          id="customer-enquiries"
+          className="mt-24 scroll-mt-35 border-t border-white/10 pt-20"
+        >
+
+          <div className="mb-7">
+            <a
+              href="#dashboard"
+              className="inline-flex items-center rounded-xl bg-orange-600 px-4 py-2.5 text-xs font-medium text-white transition hover:bg-[#e9a33f] hover:text-black"
+            >
+              ↑ Back to Dashboard
+            </a>
+          </div>
 
           <div className="mb-10 flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
 
