@@ -74,6 +74,18 @@ export default function AdminPage() {
   const [orders, setOrders] =
     useState<Order[]>([]);
 
+  const [activeCategory, setActiveCategory] =
+    useState("all");
+    const filteredProducts = useMemo(() => {
+  if (activeCategory === "all") {
+    return products;
+  }
+
+  return products.filter((product) => {
+    return product.category === activeCategory;
+  });
+}, [products, activeCategory]);
+
   const [form, setForm] =
     useState(emptyForm);
 
@@ -1637,7 +1649,10 @@ export default function AdminPage() {
 
         {/* HEADER */}
 
-        <header className="mb-10 overflow-hidden rounded-3xl border border-white/10 bg-[#0b1018]/80 p-6 shadow-2xl backdrop-blur-xl md:p-8">
+       <header
+  id="dashboard"
+  className="mb-10 overflow-hidden rounded-3xl border border-white/10 bg-[#0b1018]/80 p-6 shadow-2xl backdrop-blur-xl md:p-8"
+>
 
           <div className="flex flex-col justify-between gap-8 lg:flex-row lg:items-center">
 
@@ -1720,9 +1735,15 @@ export default function AdminPage() {
 
         {/* DASHBOARD STATS */}
 
-        <section className="mb-10 grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+       <section
+  
+  className="mb-10 grid gap-4 sm:grid-cols-2 xl:grid-cols-4"
+>
 
-          <div className="group rounded-3xl border border-white/10 bg-[#0b1018]/80 p-6 shadow-xl backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:border-[#e9a33f]/30">
+          <a
+  href="#inventory"
+  className="group block cursor-pointer rounded-3xl border border-white/10 bg-[#0b1018]/80 p-6 shadow-xl backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:border-[#e9a33f]/30"
+>
 
             <div className="flex items-start justify-between">
 
@@ -1748,10 +1769,12 @@ export default function AdminPage() {
               {totalStock} total items in inventory
             </p>
 
-          </div>
+          </a>
 
-          <div className="group rounded-3xl border border-white/10 bg-[#0b1018]/80 p-6 shadow-xl backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:border-blue-400/30">
-
+         <a
+  href="#customer-orders"
+  className="group block cursor-pointer rounded-3xl border border-white/10 bg-[#0b1018]/80 p-6 shadow-xl backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:border-blue-400/30"
+>
             <div className="flex items-start justify-between">
 
               <div>
@@ -1776,7 +1799,7 @@ export default function AdminPage() {
               All customer orders received
             </p>
 
-          </div>
+          </a>
 
           <div className="group rounded-3xl border border-white/10 bg-[#0b1018]/80 p-6 shadow-xl backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:border-amber-400/30">
 
@@ -2165,25 +2188,90 @@ export default function AdminPage() {
 
         {/* PRODUCT LIST */}
 
-        <section className="mt-20">
+       <section
+  id="inventory"
+  className="mt-20 scroll-mt-37"
+>
 
           <div className="mb-8 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
 
             <div>
+  <p className="text-xs font-semibold tracking-[0.25em] text-[#e9a33f]">
+    YOUR INVENTORY
+  </p>
 
-              <p className="text-xs font-semibold tracking-[0.25em] text-[#e9a33f]">
-                YOUR INVENTORY
-              </p>
+  <h2 className="mt-3 text-3xl font-normal">
+    Products
+  </h2>
 
-              <h2 className="mt-3 text-3xl font-normal">
-                Products
-              </h2>
+  <p className="mt-3 text-sm text-gray-500">
+    Manage all products currently available in your store.
+  </p>
+  <div className="mt-6 flex gap-2 overflow-x-auto pb-2 scrollbar-hide">
 
-              <p className="mt-3 text-sm text-gray-500">
-                Manage all products currently available in your store.
-              </p>
+  {[
+    {
+      label: "All Products",
+      value: "all",
+    },
+    {
+      label: "Laptops & Computers",
+      value: "Laptops",
+    },
+    {
+      label: "Smartphones & Accessories",
+      value: "Smartphones",
+    },
+    {
+      label: "Audio & Headphones",
+      value: "Audio",
+    },
+    {
+      label: "Smart TVs",
+      value: "TV",
+    },
+    {
+      label: "Charger & Data Cables",
+      value: "chargers",
+    },
+  ].map((category) => (
 
-            </div>
+    <button
+      key={category.value}
+      type="button"
+      onClick={() => {
+  setActiveCategory(category.value);
+
+  window.setTimeout(() => {
+    document
+      .getElementById("inventory")
+      ?.scrollIntoView({
+        behavior: "smooth",
+        block: "start",
+      });
+  }, 50);
+}}
+      className={`whitespace-nowrap rounded-xl border px-4 py-2.5 text-xs font-medium transition ${
+        activeCategory === category.value
+          ? "border-[#e9a33f]/60 bg-[#e9a33f]/10 text-[#ffd078] shadow-[0_0_25px_rgba(233,163,63,0.08)]"
+          : "border-white/10 bg-[#0b1018] text-gray-500 hover:border-white/20 hover:text-gray-300"
+      }`}
+    >
+      {category.label}
+    </button>
+
+  ))}
+
+</div>
+
+
+  <a
+    href="#dashboard"
+    className="mt-5 inline-flex items-center rounded-xl  bg-orange-600 px-4 py-2.5 text-xs font-medium text-white transition hover:border-[#e9a33f]/50 hover:bg-[#e9a33f]/10 hover:text-[#ffd078]"
+  >
+    ↑ Back to Dashboard
+  </a>
+</div>
 
             <div className="rounded-2xl border border-white/10 bg-[#0b1018] px-5 py-3 text-sm">
 
@@ -2192,7 +2280,7 @@ export default function AdminPage() {
               </span>
 
               <span className="ml-3 font-medium text-[#e9a33f]">
-                {products.length} PRODUCTS
+               {filteredProducts.length} PRODUCTS
               </span>
 
             </div>
@@ -2233,7 +2321,7 @@ export default function AdminPage() {
 
             <div className="grid gap-6 sm:grid-cols-2 xl:grid-cols-3">
 
-              {products.map((product) => (
+             {filteredProducts.map((product) => (
 
                 <div
                   key={product.id}
@@ -2356,7 +2444,10 @@ export default function AdminPage() {
 
         {/* ORDERS DASHBOARD */}
 
-        <section className="mt-24 border-t border-white/10 pt-20">
+       <section
+  id="customer-orders"
+  className="mt-24 scroll-mt-35 border-t border-white/10 pt-20"
+>
 
           <div className="mb-10 flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
 
@@ -2381,6 +2472,12 @@ export default function AdminPage() {
               </p>
 
             </div>
+            <a
+  href="#dashboard"
+  className="mt-5 inline-flex items-center rounded-xl  bg-orange-600 px-4 py-2.5 text-xs text-white font-medium  transition hover:border-[#e9a33f]/50 hover:bg-[#e9a33f]/10 hover:text-[#ffd078]"
+>
+  ↑ Back to Dashboard
+</a>
 
             <div className="flex flex-wrap items-center gap-3">
 
