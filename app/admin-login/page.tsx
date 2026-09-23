@@ -20,7 +20,7 @@ export default function AdminLoginPage() {
       const { error } = await supabase.auth.signInWithOAuth({
         provider: "google",
         options: {
-          redirectTo: "https://hlondoelectronics.store/admin-login",
+          redirectTo: `${window.location.origin}/admin-login`,
         },
       });
 

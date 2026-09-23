@@ -86,6 +86,13 @@ export default function AdminPage() {
   const [message, setMessage] =
     useState("");
 
+  const [compressionInfo, setCompressionInfo] =
+    useState<{
+      originalKB: number;
+      compressedKB: number | null;
+      status: "compressing" | "ready" | "uploaded";
+    } | null>(null);
+
   const [loading, setLoading] =
     useState(true);
 
@@ -496,7 +503,7 @@ export default function AdminPage() {
 
   /*
   ========================================
-  UPLOAD IMAGE TO SUPABASE
+  UPLOAD IMAGE TO CLOUDINARY
   ========================================
   */
 
@@ -520,9 +527,213 @@ export default function AdminPage() {
         return null;
       }
 
+      // Automatic browser-side image optimization.
+      // Images larger than 600 KB are resized/compressed before
+      // being sent to Cloudinary. No extra npm package is required.
+      const MAX_BYTES = 600 * 1024;
+      const MAX_DIMENSION = 1800;
+
+      let uploadFile = file;
+
+      setCompressionInfo({
+        originalKB: Math.round(file.size / 1024),
+        compressedKB: null,
+        status: "compressing",
+      });
+
+      setMessage(
+        `Compressing image... (${(
+          file.size / 1024 / 1024
+        ).toFixed(2)} MB)`
+      );
+
+      if (file.size > MAX_BYTES) {
+        const objectUrl = URL.createObjectURL(file);
+
+        try {
+          const image = new Image();
+
+          await new Promise<void>((resolve, reject) => {
+            image.onload = () => resolve();
+            image.onerror = () =>
+              reject(
+                new Error(
+                  "Could not read the selected image."
+                )
+              );
+            image.src = objectUrl;
+          });
+
+          let width = image.naturalWidth;
+          let height = image.naturalHeight;
+
+          // Keep the original aspect ratio while limiting the
+          // longest side to 1800 pixels.
+          if (
+            width > MAX_DIMENSION ||
+            height > MAX_DIMENSION
+          ) {
+            const scale =
+              MAX_DIMENSION /
+              Math.max(width, height);
+
+            width = Math.max(
+              1,
+              Math.round(width * scale)
+            );
+            height = Math.max(
+              1,
+              Math.round(height * scale)
+            );
+          }
+
+          const canvas = document.createElement("canvas");
+          const context = canvas.getContext("2d");
+
+          if (!context) {
+            throw new Error(
+              "Your browser could not create an image canvas."
+            );
+          }
+
+          const createWebpBlob = async (
+            canvasWidth: number,
+            canvasHeight: number,
+            quality: number
+          ): Promise<Blob> => {
+            canvas.width = canvasWidth;
+            canvas.height = canvasHeight;
+
+            context.clearRect(
+              0,
+              0,
+              canvasWidth,
+              canvasHeight
+            );
+
+            context.drawImage(
+              image,
+              0,
+              0,
+              canvasWidth,
+              canvasHeight
+            );
+
+            const blob = await new Promise<Blob | null>(
+              (resolve) => {
+                canvas.toBlob(
+                  resolve,
+                  "image/webp",
+                  quality
+                );
+              }
+            );
+
+            if (!blob) {
+              throw new Error(
+                "Could not compress the selected image."
+              );
+            }
+
+            return blob;
+          };
+
+          let quality = 0.85;
+          let blob = await createWebpBlob(
+            width,
+            height,
+            quality
+          );
+
+          // First reduce WebP quality until the file is below
+          // the target size or we reach a reasonable lower limit.
+          while (
+            blob.size > MAX_BYTES &&
+            quality > 0.35
+          ) {
+            quality = Math.max(
+              0.35,
+              quality - 0.05
+            );
+
+            blob = await createWebpBlob(
+              width,
+              height,
+              quality
+            );
+          }
+
+          // If quality reduction alone is not enough, gradually
+          // reduce the dimensions as well.
+          while (blob.size > MAX_BYTES) {
+            const nextWidth = Math.max(
+              640,
+              Math.round(width * 0.85)
+            );
+            const nextHeight = Math.max(
+              640,
+              Math.round(height * 0.85)
+            );
+
+            if (
+              nextWidth === width &&
+              nextHeight === height
+            ) {
+              break;
+            }
+
+            width = nextWidth;
+            height = nextHeight;
+
+            blob = await createWebpBlob(
+              width,
+              height,
+              quality
+            );
+          }
+
+          uploadFile = new File(
+            [blob],
+            `${file.name.replace(/\.[^/.]+$/, "")}.webp`,
+            {
+              type: "image/webp",
+              lastModified: Date.now(),
+            }
+          );
+
+          setCompressionInfo({
+            originalKB: Math.round(file.size / 1024),
+            compressedKB: Math.round(uploadFile.size / 1024),
+            status: "ready",
+          });
+
+          setMessage(
+            `Image optimized: ${Math.round(
+              file.size / 1024
+            )} KB → ${Math.round(
+              uploadFile.size / 1024
+            )} KB. Uploading...`
+          );
+        } finally {
+          URL.revokeObjectURL(objectUrl);
+        }
+      } else {
+        setCompressionInfo({
+          originalKB: Math.round(file.size / 1024),
+          compressedKB: Math.round(file.size / 1024),
+          status: "ready",
+        });
+
+        setMessage(
+          `Image is already ${Math.round(
+            file.size / 1024
+          )} KB. Uploading...`
+        );
+      }
+
       const formData = new FormData();
 
-      formData.append("file", file);
+      formData.append("file", uploadFile);
       formData.append(
         "upload_preset",
         uploadPreset
@@ -554,6 +765,18 @@ export default function AdminPage() {
 
         return null;
       }
+
+      setCompressionInfo((current) =>
+        current
+          ? { ...current, status: "uploaded" }
+          : current
+      );
+
+      setMessage(
+        `Image uploaded successfully (${Math.round(
+          uploadFile.size / 1024
+        )} KB).`
+      );
 
       return data.secure_url as string;
     } catch (error) {
@@ -974,6 +1197,7 @@ export default function AdminPage() {
 
   const removeSelectedImage = () => {
     setSelectedImage(null);
+    setCompressionInfo(null);
 
     setForm((current) => ({
       ...current,
@@ -1870,6 +2094,48 @@ export default function AdminPage() {
                   />
 
                 </div>
+
+                {compressionInfo && (
+
+                  <div className="border-t border-white/10 px-6 py-5">
+
+                    <div className="rounded-2xl border border-[#e9a33f]/30 bg-[#e9a33f]/5 p-5">
+
+                      <p className="text-xs font-bold uppercase tracking-[0.2em] text-[#e9a33f]">
+                        Image Compression
+                      </p>
+
+                      {compressionInfo.status === "compressing" && (
+                        <p className="mt-3 text-sm font-semibold text-white">
+                          ⚡ Compressing image... {compressionInfo.originalKB} KB → checking optimized size...
+                        </p>
+                      )}
+
+                      {compressionInfo.status === "ready" && (
+                        <p className="mt-3 text-sm font-semibold text-white">
+                          ⚡ Optimized: {compressionInfo.originalKB} KB → {compressionInfo.compressedKB} KB
+                        </p>
+                      )}
+
+                      {compressionInfo.status === "uploaded" && (
+                        <p className="mt-3 text-sm font-semibold text-white">
+                          ✅ Uploaded to Cloudinary: {compressionInfo.originalKB} KB → {compressionInfo.compressedKB} KB
+                        </p>
+                      )}
+
+                      {compressionInfo.compressedKB !== null && compressionInfo.originalKB > 0 && (
+                        <p className="mt-2 text-xs text-gray-400">
+                          {compressionInfo.originalKB > compressionInfo.compressedKB
+                            ? `Reduced by ${Math.round(((compressionInfo.originalKB - compressionInfo.compressedKB) / compressionInfo.originalKB) * 100)}%`
+                            : "No compression needed — image was already within the 600 KB target."}
+                        </p>
+                      )}
+
+                    </div>
+
+                  </div>
+
+                )}
 
               </div>
 
