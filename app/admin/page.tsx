@@ -67,6 +67,8 @@ export default function AdminPage() {
 
   const [isAuthorized, setIsAuthorized] =
     useState(false);
+  const [isLoggingOut, setIsLoggingOut] =
+  useState(false);  
 
   const [products, setProducts] =
     useState<Product[]>([]);
@@ -207,6 +209,8 @@ const filteredProducts = useMemo(() => {
 
   const [deletingOrderId, setDeletingOrderId] =
     useState<number | null>(null);
+  const [deletingProductId, setDeletingProductId] =
+  useState<number | null>(null);
 
   const [selectedStatuses, setSelectedStatuses] =
     useState<Record<number, string>>({});
@@ -1258,12 +1262,15 @@ const changeProductPage = (page: number) => {
         );
 
       if (!confirmDelete) {
-        return;
-      }
+  return;
+}
 
-      setMessage(
-        "Deleting product..."
-      );
+
+setDeletingProductId(product.id);
+
+setMessage(
+  "Deleting product..."
+);
 
       try {
         const { error } =
@@ -1312,7 +1319,7 @@ const changeProductPage = (page: number) => {
         window.setTimeout(() => {
           setMessage("");
         }, 3000);
-      } catch (error) {
+            } catch (error) {
         console.error(
           "Unexpected delete error:",
           error
@@ -1321,6 +1328,8 @@ const changeProductPage = (page: number) => {
         setMessage(
           "Something went wrong while deleting the product."
         );
+      } finally {
+        setDeletingProductId(null);
       }
     };
 
@@ -1737,16 +1746,18 @@ const changeProductPage = (page: number) => {
   */
 
   const handleLogout = async () => {
-    await supabase.auth.signOut();
+  setIsLoggingOut(true);
 
-    sessionStorage.removeItem(
-      ADMIN_LOGIN_KEY
-    );
+  await supabase.auth.signOut();
 
-    router.replace(
-      "/admin-login"
-    );
-  };
+  sessionStorage.removeItem(
+    ADMIN_LOGIN_KEY
+  );
+
+  router.replace(
+    "/admin-login"
+  );
+};
 
   /*
   ========================================
@@ -1842,12 +1853,20 @@ const changeProductPage = (page: number) => {
               </a>
 
               <button
-                type="button"
-                onClick={handleLogout}
-                className="rounded-2xl border border-red-500/30 bg-red-500/5 px-5 py-3 text-sm font-medium text-red-400 transition duration-300 hover:-translate-y-0.5 hover:bg-red-500 hover:text-white"
-              >
-                Logout
-              </button>
+  type="button"
+  onClick={handleLogout}
+  disabled={isLoggingOut}
+  className="rounded-2xl border border-red-500/30 bg-red-500/5 px-5 py-3 text-sm font-medium text-red-400 transition duration-300 hover:-translate-y-0.5 hover:bg-red-500 hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
+>
+  {isLoggingOut ? (
+    <span className="flex items-center gap-2">
+      <span className="h-4 w-4 animate-spin rounded-full border-2 border-red-400/30 border-t-red-400" />
+      Logging out...
+    </span>
+  ) : (
+    "Logout"
+  )}
+</button>
 
             </div>
 
@@ -2628,14 +2647,22 @@ const changeProductPage = (page: number) => {
                       </button>
 
                       <button
-                        type="button"
-                        onClick={() =>
-                          deleteProduct(product)
-                        }
-                        className="rounded-2xl border border-red-500/25 bg-red-500/5 px-4 py-3.5 text-sm font-bold text-red-400 transition hover:bg-red-500 hover:text-white"
-                      >
-                        Delete
-                      </button>
+  type="button"
+  onClick={() =>
+    deleteProduct(product)
+  }
+  disabled={deletingProductId === product.id}
+  className="rounded-2xl border border-red-500/25 bg-red-500/5 px-4 py-3.5 text-sm font-bold text-red-400 transition hover:bg-red-500 hover:text-white disabled:cursor-not-allowed disabled:opacity-60"
+>
+  {deletingProductId === product.id ? (
+    <span className="flex items-center justify-center gap-2">
+      <span className="h-4 w-4 animate-spin rounded-full border-2 border-red-400/30 border-t-red-400" />
+      Deleting...
+    </span>
+  ) : (
+    "Delete"
+  )}
+</button>
 
                     </div>
 
