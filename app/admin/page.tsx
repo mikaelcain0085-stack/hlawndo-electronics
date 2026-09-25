@@ -1787,7 +1787,7 @@ setMessage(
   }
 
   return (
-   <main className="admin-page relative flex min-h-screen flex-col overflow-x-hidden bg-[#05080d] px-4 py-6 text-white sm:px-6 md:px-10 md:py-10">
+   <main className="admin-page relative flex min-h-screen flex-col bg-[#05080d] px-4 py-6 text-white sm:px-6 md:px-10 md:py-10">
 
       <div className="pointer-events-none absolute left-[-10%] top-[-5%] h-[500px] w-[500px] rounded-full bg-[#e9a33f]/10 blur-[150px]" />
 
