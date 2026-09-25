@@ -483,6 +483,7 @@ const filteredProducts = useMemo(() => {
         router.replace("/admin-login");
         return;
       }
+      
 
       const userEmail = session.user.email.toLowerCase();
 
@@ -1786,7 +1787,7 @@ setMessage(
   }
 
   return (
-    <main className="relative min-h-screen overflow-hidden bg-[#05080d] px-4 py-6 text-white sm:px-6 md:px-10 md:py-10">
+    <main className="admin-page relative flex min-h-screen flex-col bg-[#05080d] px-4 py-6 text-white sm:px-6 md:px-10 md:py-10">
 
       <div className="pointer-events-none absolute left-[-10%] top-[-5%] h-[500px] w-[500px] rounded-full bg-[#e9a33f]/10 blur-[150px]" />
 
@@ -1794,7 +1795,7 @@ setMessage(
 
       <div className="pointer-events-none absolute bottom-[-10%] left-[20%] h-[500px] w-[500px] rounded-full bg-orange-500/5 blur-[180px]" />
 
-      <div className="relative mx-auto max-w-7xl">
+   <div className="relative mx-auto w-full max-w-7xl">
 
         {/* HEADER */}
 
@@ -1928,8 +1929,8 @@ setMessage(
 
           </a>
 
-         <a
-  href="#customer-orders"
+        <a
+  href="/admin/orders"
   className="group block cursor-pointer rounded-3xl border border-white/10 bg-[#0b1018]/80 p-6 shadow-xl backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:border-blue-400/30"
 >
             <div className="flex items-start justify-between">
@@ -1958,8 +1959,12 @@ setMessage(
 
           </a>
 
-          <div className="group rounded-3xl border border-white/10 bg-[#0b1018]/80 p-6 shadow-xl backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:border-amber-400/30">
+         <a
+  href="/admin/orders"
+  
 
+className="group block cursor-pointer rounded-3xl border border-white/10 bg-[#0b1018]/80 p-6 shadow-xl backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:border-[#e9a33f]/30"
+>
             <div className="flex items-start justify-between">
 
               <div>
@@ -1984,9 +1989,12 @@ setMessage(
               Orders waiting for action
             </p>
 
-          </div>
+          </a>
 
-          <div className="group rounded-3xl border border-white/10 bg-[#0b1018]/80 p-6 shadow-xl backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:border-emerald-400/30">
+         <a
+  href="/admin/orders"
+  className="group block cursor-pointer rounded-3xl border border-white/10 bg-[#0b1018]/80 p-6 shadow-xl backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:border-emerald-400/30"
+>
 
             <div className="flex items-start justify-between">
 
@@ -2012,10 +2020,10 @@ setMessage(
               Cancelled orders excluded
             </p>
 
-          </div>
+          </a>
 
           <a
-            href="#customer-enquiries"
+           href="/admin/enquiries"
             className="group block cursor-pointer rounded-3xl border border-white/10 bg-[#0b1018]/80 p-6 shadow-xl backdrop-blur-xl transition duration-300 hover:-translate-y-1 hover:border-purple-400/30"
           >
 
@@ -2392,9 +2400,8 @@ setMessage(
 
         {/* PRODUCT LIST */}
 
-       <section
-  id="inventory"
-  className="mt-20 scroll-mt-37"
+      <section
+  className="mt-20"
 >
 
           <div className="mb-7">
@@ -2405,8 +2412,10 @@ setMessage(
               ↑ Back to Dashboard
             </a>
           </div>
-
-          <div className="mb-8 flex flex-col justify-between gap-5 sm:flex-row sm:items-end">
+<div id="inventory" className="h-0" />
+          <div
+  className="mb-8 flex flex-col justify-between gap-5 sm:flex-row sm:items-end"
+>
 
             <div>
   <p className="text-xs font-semibold tracking-[0.25em] text-[#e9a33f]">
@@ -2794,677 +2803,11 @@ setMessage(
 
         </section>
 
-        {/* ORDERS DASHBOARD */}
-       <section
-  id="customer-orders"
-  className="mt-24 scroll-mt-35 border-t border-white/10 pt-20"
->
-
-          <div className="mb-7">
-            <a
-              href="#dashboard"
-              className="inline-flex items-center rounded-xl bg-orange-600 px-4 py-2.5 text-xs font-medium text-white transition hover:bg-[#e9a33f] hover:text-black"
-            >
-              ↑ Back to Dashboard
-            </a>
-          </div>
-
-          <div className="mb-10 flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
-
-            <div>
-
-              <p className="text-xs font-normal tracking-[0.25em] text-[#e9a33f]">
-                CUSTOMER MANAGEMENT
-              </p>
-
-              <h2 className="mt-4 text-4xl font-normal sm:text-2xl">
-
-                Customer{" "}
-
-                <span className="bg-gradient-to-r from-[#ffd078] to-[#e9a33f] bg-clip-text text-transparent">
-                  Orders
-                </span>
-
-              </h2>
-
-              <p className="mt-4 max-w-xl text-sm leading-relaxed text-gray-500 sm:text-base">
-                Review customer purchases, delivery details and keep every order updated.
-              </p>
-
-            </div>
-
-            <div className="flex flex-wrap items-center gap-3">
-
-              <button
-                type="button"
-                onClick={loadOrders}
-                className="rounded-2xl border border-white/10 bg-[#0b1018] px-5 py-3.5 text-sm text-gray-300 transition hover:border-[#e9a33f]/50 hover:text-[#ffd078]"
-              >
-                ↻ Refresh Orders
-              </button>
-
-              <div className="rounded-2xl border border-[#e9a33f]/20 bg-[#e9a33f]/5 px-5 py-3.5 text-sm font-bold text-[#ffd078]">
-                {orders.length} Orders
-              </div>
-
-            </div>
-
-          </div>
-
-          {ordersLoading ? (
-
-            <div className="flex flex-col items-center justify-center rounded-[2rem] border border-white/10 bg-[#0b1018] py-24">
-
-              <div className="h-12 w-12 animate-spin rounded-full border-2 border-white/10 border-t-[#e9a33f]" />
-
-              <p className="mt-5 text-sm text-gray-500">
-                Loading customer orders...
-              </p>
-
-            </div>
-
-          ) : orders.length === 0 ? (
-
-            <div className="rounded-[2rem] border border-dashed border-white/10 bg-[#0b1018] py-24 text-center">
-
-              <div className="text-3xl">
-                🛒
-              </div>
-
-              <h3 className="mt-6 text-4xl font-medium">
-                No orders yet
-              </h3>
-
-              <p className="mt-3 text-sm text-gray-500">
-                Customer orders will automatically appear here.
-              </p>
-
-            </div>
-
-          ) : (
-
-            <div className="space-y-8">
-
-              {orders.map((order) => {
-
-                const orderItems =
-                  getOrderItems(
-                    order.items
-                  );
-
-                const currentStatus =
-                  order.status ||
-                  "Pending";
-
-                return (
-
-                  <article
-                    key={order.id}
-                    className="overflow-hidden rounded-[2rem] border border-white/10 bg-[#0b1018]/90 shadow-2xl transition duration-300 hover:border-white/15"
-                  >
-
-                    {/* ORDER HEADER */}
-
-                    <div className="flex flex-col justify-between gap-6 border-b border-white/10 bg-gradient-to-r from-white/[0.04] to-transparent p-4 md:flex-row md:items-center md:p-5">
-
-                      <div>
-
-                        <div className="flex flex-wrap items-center gap-3">
-
-                          <div className="flex h-12 min-w-12 items-center justify-center rounded-2xl bg-[#e9a33f]/10 px-3 font-medium text-[#ffd078]">
-                            #{order.id}
-                          </div>
-
-                          <span
-                            className={`rounded-full border px-4 py-2 text-xs font-medium ${getStatusStyle(
-                              currentStatus
-                            )}`}
-                          >
-                            {currentStatus}
-                          </span>
-
-                        </div>
-
-                        <p className="mt-4 text-sm text-gray-500">
-                          {formatDate(
-                            order.created_at
-                          )}
-                        </p>
-
-                      </div>
-
-                      <div className="rounded-2xl border border-[#e9a33f]/15 bg-[#e9a33f]/5 px-6 py-4 md:text-right">
-
-                        <p className="text-[10px] font-medium tracking-[0.2em] text-gray-500">
-                          ORDER TOTAL
-                        </p>
-
-                        <p className="mt-2 text-3xl font-medium text-[#ffd078]">
-                          {formatPrice(
-                            order.total
-                          )}
-                        </p>
-
-                      </div>
-
-                    </div>
-
-                    {/* ORDER CONTENT */}
-
-                    <div className="grid gap-5 p-5 md:p-6 xl:grid-cols-[0.85fr_1.35fr]">
-
-                      {/* CUSTOMER */}
-
-                      <div>
-
-                        <p className="text-xs font-medium tracking-[0.22em] text-[#e9a33f]">
-                          CUSTOMER DETAILS
-                        </p>
-
-                        <div className="mt-5 divide-y divide-white/5 overflow-hidden rounded-3xl border border-white/10 bg-[#070b11]">
-
-                          <div className="p-4">
-
-                            <p className="text-[10px] tracking-[0.15em] text-gray-500">
-                              CUSTOMER NAME
-                            </p>
-
-                            <p className="mt-2 text-1xs font-medium">
-                              {order.customer_name}
-                            </p>
-
-                          </div>
-
-                          <div className="p-5">
-
-                            <p className="text-[10px] tracking-[0.15em] text-gray-500">
-                              PHONE NUMBER
-                            </p>
-
-                            <a
-                              href={`tel:${order.phone}`}
-                              className="mt-2 block font-medium text-[#ffd078] transition hover:text-white"
-                            >
-                              {order.phone}
-                            </a>
-
-                          </div>
-
-                          <div className="p-5">
-
-                            <p className="text-[10px] tracking-[0.15em] text-gray-500">
-                              DELIVERY ADDRESS
-                            </p>
-
-                            <p className="mt-2 text-sm leading-relaxed text-gray-300">
-                              {order.address}
-                            </p>
-
-                          </div>
-
-                          <div className="p-5">
-
-                            <p className="text-[10px] tracking-[0.15em] text-gray-500">
-                              PAYMENT METHOD
-                            </p>
-
-                            <p className="mt-2 font-medium text-[#ffd078]">
-                              {order.payment_method}
-                            </p>
-
-                          </div>
-
-                        </div>
-
-                        {/* CANCELLATION REASON */}
-
-                        {currentStatus === "Cancelled" && (
-
-                          <div className="mt-6 overflow-hidden rounded-3xl border border-red-500/25 bg-red-500/[0.06]">
-
-                            <div className="flex items-center gap-3 border-b border-red-500/15 px-4 py-3">
-
-                              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-red-500/10 text-lg">
-                                ❌
-                              </div>
-
-                              <div>
-
-                                <p className="text-[10px] font-bold tracking-[0.18em] text-red-400">
-                                  ORDER CANCELLED
-                                </p>
-
-                                <p className="mt-1 text-xs text-red-300/60">
-                                  Customer cancellation information
-                                </p>
-
-                              </div>
-
-                            </div>
-
-                            <div className="p-5">
-
-                              <p className="text-[10px] font-medium tracking-[0.15em] text-gray-500">
-                                CANCELLATION REASON
-                              </p>
-
-                              <p className="mt-3 whitespace-pre-wrap text-sm leading-relaxed text-gray-200">
-
-                                {order.cancellation_reason?.trim()
-                                  ? order.cancellation_reason
-                                  : "No cancellation reason was provided by the customer."}
-
-                              </p>
-
-                            </div>
-
-                          </div>
-
-                        )}
-
-                      </div>
-
-                      {/* ORDER ITEMS */}
-
-                      <div>
-
-                        <p className="text-xs font-normal tracking-[0.22em] text-[#e9a33f]">
-                          ORDERED ITEMS
-                        </p>
-
-                        <div className="mt-4 space-y-3">
-
-                          {orderItems.length === 0 ? (
-
-                            <div className="rounded-3xl border border-white/10 bg-[#070b11] p-6 text-sm text-gray-500">
-                              Could not display the ordered items.
-                            </div>
-
-                          ) : (
-
-                            orderItems.map(
-                              (item, index) => (
-
-                                <div
-                                  key={`${order.id}-${item.id}-${index}`}
-                                  className="group flex gap-4 rounded-3xl border border-white/10 bg-[#070b11] p-4 transition hover:border-white/20"
-                                >
-
-                                  <div className="flex h-16 w-16 shrink-0 items-center justify-center overflow-hidden rounded-2xl bg-white/[0.03] p-2">
-
-                                    {item.image ? (
-
-                                      <img
-                                        src={item.image}
-                                        alt={item.name}
-                                        className="h-full w-full object-contain transition duration-300 group-hover:scale-110"
-                                      />
-
-                                    ) : (
-
-                                      <span className="text-4xl">
-                                        📦
-                                      </span>
-
-                                    )}
-
-                                  </div>
-
-                                  <div className="flex min-w-0 flex-1 flex-col justify-center">
-
-                                    <p className="text-[10px] font-medium tracking-[0.16em] text-gray-500">
-                                      {item.category}
-                                    </p>
-
-                                    <h3 className="mt-2 text-1xl font-medium">
-                                      {item.name}
-                                    </h3>
-
-                                    <div className="mt-4 flex flex-wrap items-center justify-between gap-3">
-
-                                      <p className="text-1xl font-medium text-[#ffd078]">
-                                        {formatPrice(
-                                          item.price
-                                        )}
-                                      </p>
-
-                                      <p className="rounded-full border border-white/10 bg-white/[0.02] px-3 py-1.5 text-xs text-gray-300">
-                                        Qty:{" "}
-                                        <span className="font-bold text-white">
-                                          {item.quantity}
-                                        </span>
-                                      </p>
-
-                                    </div>
-
-                                  </div>
-
-                                </div>
-
-                              )
-                            )
-
-                          )}
-
-                        </div>
-
-                      </div>
-
-                    </div>
-
-                    {/* ORDER CONTROLS */}
-
-                    <div className="border-t border-white/10 bg-[#070b11]/80 p-4 md:p-5">
-
-                      <div className="flex flex-col justify-between gap-4 xl:flex-row xl:items-center">
-
-                        <div>
-
-                          <p className="text-[10px] font-medium tracking-[0.22em] text-gray-500">
-                            ORDER STATUS
-                          </p>
-
-                          <p className="mt-2 text-1xs font-medium">
-
-                            Current status:{" "}
-
-                            <span className="text-[#ffd078]">
-                              {currentStatus}
-                            </span>
-
-                          </p>
-
-                        </div>
-
-                        <div className="flex flex-col gap-3 sm:flex-row sm:items-center">
-
-                          <select
-                            value={
-                              selectedStatuses[
-                                order.id
-                              ] ??
-                              currentStatus
-                            }
-                            disabled={
-                              updatingOrderId ===
-                                order.id ||
-                              deletingOrderId ===
-                                order.id
-                            }
-                            onChange={(
-                              event
-                            ) =>
-                              setSelectedStatuses(
-                                (
-                                  current
-                                ) => ({
-                                  ...current,
-                                  [order.id]:
-                                    event.target
-                                      .value,
-                                })
-                              )
-                            }
-                            className="rounded-2xl border border-white/10 bg-[#0b1018] px-4 py-3 text-sm font-medium text-white outline-none transition focus:border-[#e9a33f]/60 disabled:cursor-not-allowed disabled:opacity-60"
-                          >
-
-                            <option value="Pending">
-                              Pending
-                            </option>
-
-                            <option value="Confirmed">
-                              Confirmed
-                            </option>
-
-                            <option value="Processing">
-                              Processing
-                            </option>
-
-                            <option value="Shipped">
-                              Shipped
-                            </option>
-
-                            <option value="Delivered">
-                              Delivered
-                            </option>
-
-                            <option value="Cancelled">
-                              Cancelled
-                            </option>
-
-                          </select>
-
-                          <button
-                            type="button"
-                            disabled={
-                              updatingOrderId ===
-                                order.id ||
-                              deletingOrderId ===
-                                order.id ||
-                              (
-                                selectedStatuses[
-                                  order.id
-                                ] ??
-                                currentStatus
-                              ) ===
-                                currentStatus
-                            }
-                            onClick={() =>
-                              updateOrderStatus(
-                                order.id
-                              )
-                            }
-                            className="rounded-2xl bg-gradient-to-r from-[#d88729] via-[#e9a33f] to-[#ffd078] px-5 py-3 text-sm font-black text-black shadow-[0_10px_30px_rgba(233,163,63,0.15)] transition hover:-translate-y-0.5 disabled:cursor-not-allowed disabled:opacity-50"
-                          >
-
-                            {updatingOrderId ===
-                            order.id
-                              ? "Updating..."
-                              : "Update Order →"}
-
-                          </button>
-
-                          <button
-                            type="button"
-                            disabled={
-                              deletingOrderId ===
-                                order.id ||
-                              updatingOrderId ===
-                                order.id
-                            }
-                            onClick={() =>
-                              deleteOrder(order)
-                            }
-                            className="rounded-2xl border border-red-500/30 bg-red-500/10 px-7 py-4 text-sm font-bold text-red-400 transition hover:-translate-y-0.5 hover:bg-red-500 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
-                          >
-
-                            {deletingOrderId ===
-                            order.id
-                              ? "Deleting..."
-                              : "🗑 Delete Order"}
-
-                          </button>
-
-                        </div>
-
-                      </div>
-
-                    </div>
-
-                  </article>
-
-                );
-              })}
-
-            </div>
-
-          )}
-
-        </section>
-
-        {/* ENQUIRIES DASHBOARD */}
-
-        <section
-          id="customer-enquiries"
-          className="mt-24 scroll-mt-35 border-t border-white/10 pt-20"
-        >
-
-          <div className="mb-7">
-            <a
-              href="#dashboard"
-              className="inline-flex items-center rounded-xl bg-orange-600 px-4 py-2.5 text-xs font-medium text-white transition hover:bg-[#e9a33f] hover:text-black"
-            >
-              ↑ Back to Dashboard
-            </a>
-          </div>
-
-          <div className="mb-10 flex flex-col justify-between gap-6 lg:flex-row lg:items-end">
-
-            <div>
-
-              <p className="text-xs font-normal tracking-[0.25em] text-[#e9a33f]">
-                CUSTOMER MANAGEMENT
-              </p>
-
-              <h2 className="mt-4 text-4xl font-normal sm:text-2xl">
-
-                Customer{" "}
-
-                <span className="bg-gradient-to-r from-[#ffd078] to-[#e9a33f] bg-clip-text text-transparent">
-                  Enquiries
-                </span>
-
-              </h2>
-
-              <p className="mt-4 max-w-xl text-sm leading-relaxed text-gray-500 sm:text-base">
-                Questions and requests submitted through the website&apos;s enquiry form.
-              </p>
-
-            </div>
-
-            <div className="flex flex-wrap items-center gap-3">
-
-              <button
-                type="button"
-                onClick={loadEnquiries}
-                className="rounded-2xl border border-white/10 bg-[#0b1018] px-5 py-3.5 text-sm text-gray-300 transition hover:border-[#e9a33f]/50 hover:text-[#ffd078]"
-              >
-                ↻ Refresh Enquiries
-              </button>
-
-              <div className="rounded-2xl border border-[#e9a33f]/20 bg-[#e9a33f]/5 px-5 py-3.5 text-sm font-bold text-[#ffd078]">
-                {enquiries.length} Enquiries
-              </div>
-
-            </div>
-
-          </div>
-
-          {enquiriesLoading ? (
-
-            <div className="flex flex-col items-center justify-center rounded-[2rem] border border-white/10 bg-[#0b1018] py-24">
-
-              <div className="h-12 w-12 animate-spin rounded-full border-2 border-white/10 border-t-[#e9a33f]" />
-
-              <p className="mt-5 text-sm text-gray-500">
-                Loading enquiries...
-              </p>
-
-            </div>
-
-          ) : enquiries.length === 0 ? (
-
-            <div className="rounded-[2rem] border border-dashed border-white/10 bg-[#0b1018] py-24 text-center">
-
-              <div className="text-3xl">
-                ✉️
-              </div>
-
-              <h3 className="mt-6 text-4xl font-medium">
-                No enquiries yet
-              </h3>
-
-              <p className="mt-3 text-sm text-gray-500">
-                Enquiries submitted from the website will automatically appear here.
-              </p>
-
-            </div>
-
-          ) : (
-
-            <div className="space-y-8">
-
-              {enquiries.map((enquiry) => (
-
-                <article
-                  key={enquiry.id}
-                  className="overflow-hidden rounded-[2rem] border border-white/10 bg-[#0b1018] p-8 shadow-2xl"
-                >
-
-                  <div className="flex flex-col justify-between gap-6 lg:flex-row lg:items-start">
-
-                    <div>
-
-                      <p className="text-xs tracking-[0.25em] text-gray-500">
-                        {new Date(
-                          enquiry.created_at
-                        ).toLocaleString()}
-                      </p>
-
-                      <h3 className="mt-2 text-2xl font-medium">
-                        {enquiry.full_name}
-                      </h3>
-
-                      <p className="mt-1 text-sm text-gray-400">
-                        {enquiry.phone}
-                      </p>
-
-                      <p className="mt-1 text-sm text-gray-400">
-                        {enquiry.address}
-                      </p>
-
-                      <p className="mt-5 max-w-2xl text-sm leading-relaxed text-gray-300">
-                        {enquiry.message}
-                      </p>
-
-                    </div>
-
-                    <div className="flex shrink-0 items-start">
-
-                      <button
-                        type="button"
-                        disabled={
-                          deletingEnquiryId === enquiry.id
-                        }
-                        onClick={() =>
-                          deleteEnquiry(enquiry)
-                        }
-                        className="rounded-2xl border border-red-500/30 bg-red-500/10 px-7 py-4 text-sm font-bold text-red-400 transition hover:-translate-y-0.5 hover:bg-red-500 hover:text-white disabled:cursor-not-allowed disabled:opacity-50"
-                      >
-
-                        {deletingEnquiryId === enquiry.id
-                          ? "Deleting..."
-                          : "🗑 Delete Enquiry"}
-
-                      </button>
-
-                    </div>
-
-                  </div>
-
-                </article>
-
-              ))}
-
-            </div>
-
-          )}
-
-        </section>
-
+        
+       
         {/* FOOTER */}
 
-        <footer className="mt-24 border-t border-white/10 py-10 text-center">
+       <footer className="mt-auto border-t border-white/10 py-10 text-center">
 
           <div className="flex flex-col items-center gap-3">
 
